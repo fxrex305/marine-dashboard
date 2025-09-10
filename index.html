@@ -173,6 +173,7 @@
             userId: null,
             isAuthReady: false,
             startDateOffset: 0,
+            // Pre-fill the API URLs to make it easier for the user
             marineApiUrl: 'https://marine-api.open-meteo.com/v1/marine',
             weatherApiUrl: 'https://api.open-meteo.com/v1/forecast',
             currentsApiUrl: '', // New state for currents URL
@@ -291,6 +292,7 @@
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     state.startDateOffset = data.startDateOffset || 0;
+                    // The URLs are now pre-filled, so we only load if they exist in the database
                     state.marineApiUrl = data.marineApiUrl || state.marineApiUrl;
                     state.weatherApiUrl = data.weatherApiUrl || state.weatherApiUrl;
                     state.currentsApiUrl = data.currentsApiUrl || ''; // Load currents URL
