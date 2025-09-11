@@ -114,7 +114,6 @@
         <nav class="flex justify-around bg-gray-50 border-b border-gray-200 text-gray-500 font-medium">
             <button class="tab-button active flex-1 py-4 text-center" data-tab="dashboard">Dashboard</button>
             <button class="tab-button flex-1 py-4 text-center" data-tab="trip-analysis">Trip Analysis</button>
-            <button class="tab-button flex-1 py-4 text-center" data-tab="fishing-forecast">Fishing Forecast</button>
         </nav>
 
         <!-- Main Content Area (Tab Content) -->
@@ -132,14 +131,6 @@
                 <h2 class="text-2xl font-bold mb-4 text-gray-800">Fishing Trip Analysis</h2>
                 <div id="trip-analysis-content" class="space-y-4">
                     <div class="message-box warning">Please run an analysis to see the report.</div>
-                </div>
-            </div>
-
-            <!-- Fishing Forecast Tab -->
-            <div id="fishing-forecast" class="tab-content">
-                <h2 class="text-2xl font-bold mb-4 text-gray-800">Wanganella Bank Forecast</h2>
-                <div id="fishing-forecast-content" class="space-y-4">
-                    <div class="message-box warning">Please run an analysis to see the fishing forecast.</div>
                 </div>
             </div>
         </main>
@@ -251,7 +242,6 @@
             tabContents: document.querySelectorAll('.tab-content'),
             dashboardContent: document.getElementById('dashboard-content'),
             tripAnalysisContent: document.getElementById('trip-analysis-content'),
-            fishingForecastContent: document.getElementById('fishing-forecast-content'),
         };
 
         function showMessage(message, type = 'info') {
@@ -611,7 +601,6 @@
 
             renderDashboard();
             renderTripAnalysis();
-            renderFishingForecast();
         }
 
         function getDailySummary(waypointData) {
@@ -781,125 +770,6 @@
                 </div>
             `;
             contentDiv.innerHTML = analysisHtml;
-        }
-
-        function renderFishingForecast() {
-            console.log("Rendering Fishing Forecast...");
-            const contentDiv = elements.fishingForecastContent;
-            contentDiv.innerHTML = '';
-            
-            if (!state.tripAnalysis) {
-                console.log("Fishing Forecast: No trip analysis found.");
-                contentDiv.innerHTML = '<div class="message-box warning">Please run an analysis to see the fishing forecast.</div>';
-                return;
-            }
-
-            const wanganellaData = state.allWeatherData.Wanganella_Bank;
-            console.log("Wanganella Bank data is:", wanganellaData);
-
-            if (!wanganellaData || wanganellaData.length === 0) {
-                 contentDiv.innerHTML = '<div class="message-box error">⚠️ Data for Wanganella Bank could not be loaded. Please try again.</div>';
-                 return;
-            }
-
-            const fishingDays = [];
-            const fishingSegments = CONFIG.ROUTE_SEGMENTS.filter(seg => seg.name.includes("Fishing Day"));
-
-            let totalOutboundHours = 0;
-            for (const segment of CONFIG.ROUTE_SEGMENTS) {
-                if (segment.name.includes("Fishing Day")) {
-                    break;
-                }
-                totalOutboundHours += segment.duration;
-            }
-            
-            // Check if the trip is too far in the future for data
-            const firstFishingDayHours = (state.startDateOffset * 24) + totalOutboundHours;
-            const firstFishingDayIndex = Math.floor(firstFishingDayHours / CONFIG.INTERVAL_HOURS);
-            if (firstFishingDayIndex >= wanganellaData.length) {
-                contentDiv.innerHTML = '<div class="message-box error">⚠️ The selected trip date is too far in the future. Marine weather data is only available for up to 14 days ahead. Please select an earlier start date.</div>';
-                return;
-            }
-
-            fishingSegments.forEach((segment, index) => {
-                const tripStartHours = state.startDateOffset * 24;
-                const fishingStartHours = tripStartHours + totalOutboundHours + (index * 24);
-                const fishingStartIndex = Math.floor(fishingStartHours / CONFIG.INTERVAL_HOURS);
-
-                let maxWind = null, maxWave = null, goodHours = 0;
-                let fishingDate = "N/A";
-                let hasData = false;
-
-                if (fishingStartIndex < wanganellaData.length) {
-                    fishingDate = formatDate(wanganellaData[fishingStartIndex].time);
-                    for (let i = fishingStartIndex; i < Math.min(fishingStartIndex + (24 / CONFIG.INTERVAL_HOURS), wanganellaData.length); i++) {
-                        const data = wanganellaData[i];
-                        if (data && (data.wind !== null || data.wave !== null)) {
-                            hasData = true;
-                            if (data.wind !== null) {
-                                maxWind = (maxWind === null) ? data.wind : Math.max(maxWind, data.wind);
-                            }
-                            if (data.wave !== null) {
-                                maxWave = (maxWave === null) ? data.wave : Math.max(maxWave, data.wave);
-                            }
-                            if (data.wind !== null && data.wave !== null && data.wind < 15 && data.wave < 1.5) {
-                                goodHours += CONFIG.INTERVAL_HOURS;
-                            }
-                        }
-                    }
-                }
-
-                const quality = hasData ? (goodHours >= 12 ? "Excellent" : goodHours >= 8 ? "Good" : goodHours >= 4 ? "Fair" : "Poor") : "N/A";
-
-                fishingDays.push({
-                    bank: 'Wanganella Bank',
-                    date: fishingDate,
-                    maxWind: maxWind !== null ? maxWind.toFixed(1) : 'N/A',
-                    maxWave: maxWave !== null ? maxWave.toFixed(1) : 'N/A',
-                    goodHours: hasData ? goodHours : 'N/A',
-                    quality
-                });
-            });
-
-            const tableHtml = `
-                <div class="overflow-x-auto">
-                    <table class="min-w-full bg-white rounded-xl shadow overflow-hidden">
-                        <thead class="bg-gray-200 text-sm">
-                            <tr>
-                                <th class="py-2 px-4 text-left">Bank</th>
-                                <th class="py-2 px-4 text-left">Date</th>
-                                <th class="py-2 px-4 text-left">Max Wind (kts)</th>
-                                <th class="py-2 px-4 text-left">Max Wave (m)</th>
-                                <th class="py-2 px-4 text-left">Good Hours</th>
-                                <th class="py-2 px-4 text-left">Quality</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${fishingDays.map(day => {
-                                let qualityColor = '';
-                                switch(day.quality) {
-                                    case 'Excellent': qualityColor = 'bg-emerald-200'; break;
-                                    case 'Good': qualityColor = 'bg-yellow-200'; break;
-                                    case 'Fair': qualityColor = 'bg-orange-200'; break;
-                                    case 'Poor': qualityColor = 'bg-red-200'; break;
-                                    default: qualityColor = 'bg-gray-200';
-                                }
-                                return `
-                                <tr class="border-t border-gray-100 text-sm">
-                                    <td class="py-2 px-4">${day.bank}</td>
-                                    <td class="py-2 px-4">${day.date}</td>
-                                    <td class="py-2 px-4">${day.maxWind}</td>
-                                    <td class="py-2 px-4">${day.maxWave}</td>
-                                    <td class="py-2 px-4">${day.goodHours}</td>
-                                    <td class="py-2 px-4"><span class="block text-center py-1 px-2 rounded-full text-xs font-semibold ${qualityColor}">${day.quality}</span></td>
-                                </tr>
-                                `;
-                            }).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            contentDiv.innerHTML = tableHtml;
         }
 
 
