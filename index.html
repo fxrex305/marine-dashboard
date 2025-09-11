@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wanganella Bank Forecast</title>
+    <title>Ian's Marine Weather Forecast</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
@@ -13,15 +13,16 @@
             color: #1f2937;
         }
         .container {
-            max-width: 600px;
-            margin: auto;
-            min-height: 100vh;
+            max-width: 800px;
+            margin: 2rem auto;
+            min-height: 95vh;
             display: flex;
             flex-direction: column;
             background-color: #ffffff;
             border-radius: 1.5rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             overflow: hidden;
+            border: 1px solid #e5e7eb;
         }
         .tab-content {
             display: none;
@@ -36,25 +37,64 @@
         .tab-button {
             transition: all 0.3s ease;
             cursor: pointer;
+            border-bottom: 3px solid transparent;
         }
         .tab-button.active {
-            border-bottom: 3px solid #10b981;
+            border-color: #10b981;
             color: #10b981;
             font-weight: 600;
         }
+        .message-box {
+            padding: 1rem;
+            border-radius: 0.75rem;
+            font-weight: 500;
+            text-align: center;
+        }
+        .message-box.info {
+            background-color: #d1e5f8;
+            color: #2c5282;
+        }
+        .message-box.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .message-box.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .message-box.warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
     </style>
 </head>
-<body class="bg-gray-100 p-2 sm:p-4">
+<body class="bg-gradient-to-br from-blue-500 to-cyan-500 p-4 min-h-screen flex items-center justify-center">
 
     <div class="container">
         <!-- Header -->
-        <header class="p-6 bg-white border-b border-gray-200">
-            <h1 class="text-2xl font-bold text-center text-gray-800">⚓ Wanganella Bank Forecast</h1>
-            <p id="user-id-display" class="mt-2 text-xs text-center text-gray-400"></p>
+        <header class="p-6 bg-white border-b border-gray-200 text-center">
+            <h1 class="text-3xl font-bold text-gray-800">⚓ Ian's Marine Weather Forecast</h1>
+            <p class="text-lg text-gray-600">(Wanganella Banks)</p>
+            <p id="user-id-display" class="mt-2 text-xs text-gray-400"></p>
         </header>
 
         <!-- Loading and Message Area -->
-        <div id="status-message" class="p-4 text-center bg-blue-100 text-blue-700 font-medium hidden"></div>
+        <div id="status-message" class="p-4 hidden"></div>
 
         <!-- Start Date and Action Controls -->
         <div class="p-6 bg-white border-b border-gray-200">
@@ -64,8 +104,8 @@
                     <select id="start-date" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm rounded-md shadow-sm"></select>
                 </div>
                 <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                    <button id="run-analysis" class="w-full sm:w-auto px-4 py-2 bg-emerald-600 text-white rounded-lg shadow-md hover:bg-emerald-700 transition-colors duration-200">Run Analysis</button>
-                    <button id="clear-cache" class="w-full sm:w-auto px-4 py-2 bg-gray-200 text-gray-700 rounded-lg shadow-md hover:bg-gray-300 transition-colors duration-200">Clear Data</button>
+                    <button id="run-analysis" class="w-full sm:w-auto px-6 py-3 bg-emerald-600 text-white rounded-lg shadow-md hover:bg-emerald-700 transition-colors duration-200 text-base font-semibold">Run Analysis</button>
+                    <button id="clear-cache" class="w-full sm:w-auto px-6 py-3 bg-gray-200 text-gray-700 rounded-lg shadow-md hover:bg-gray-300 transition-colors duration-200 text-base font-semibold">Clear Data</button>
                 </div>
             </div>
         </div>
@@ -79,27 +119,33 @@
 
         <!-- Main Content Area (Tab Content) -->
         <main class="flex-1 p-4 overflow-y-auto">
+            <!-- Disclaimer -->
+            <div class="message-box warning mb-6">
+                <h3 class="font-bold">⚠️ For Demonstration Purposes Only</h3>
+                <p class="mt-2 text-sm">This application is a demonstration tool and should not be used for real-world navigation. Always consult official, real-time marine weather services for safe passage.</p>
+            </div>
+
             <!-- Dashboard Tab -->
             <div id="dashboard" class="tab-content active">
-                <h2 class="text-xl font-bold mb-4 text-gray-800">Current Waypoint Conditions</h2>
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">Current Waypoint Conditions</h2>
                 <div id="dashboard-content" class="space-y-4">
-                    <div class="bg-blue-100 border border-blue-200 rounded-xl p-4 text-blue-700">Please click "Run Analysis" to get the latest weather data.</div>
+                    <div class="message-box info">Please click "Run Analysis" to get the latest weather data.</div>
                 </div>
             </div>
 
             <!-- Trip Analysis Tab -->
             <div id="trip-analysis" class="tab-content">
-                <h2 class="text-xl font-bold mb-4 text-gray-800">Fishing Trip Analysis</h2>
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">Fishing Trip Analysis</h2>
                 <div id="trip-analysis-content" class="space-y-4">
-                    <div class="bg-orange-100 border border-orange-200 rounded-xl p-4 text-orange-700">Please run an analysis to see the report.</div>
+                    <div class="message-box warning">Please run an analysis to see the report.</div>
                 </div>
             </div>
 
             <!-- Fishing Forecast Tab -->
             <div id="fishing-forecast" class="tab-content">
-                <h2 class="text-xl font-bold mb-4 text-gray-800">Wanganella Bank Forecast</h2>
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">Wanganella Bank Forecast</h2>
                 <div id="fishing-forecast-content" class="space-y-4">
-                    <div class="bg-orange-100 border border-orange-200 rounded-xl p-4 text-orange-700">Please run an analysis to see the fishing forecast.</div>
+                    <div class="message-box warning">Please run an analysis to see the fishing forecast.</div>
                 </div>
             </div>
         </main>
@@ -175,27 +221,27 @@
 
             CONFIG.WAYPOINTS = [
                 opua,
-                { name: "Midpoint_to_North_Cape", lat: midpoint1Lat, lon: midpoint1Lon },
+                { name: "Midpoint_1", lat: midpoint1Lat, lon: midpoint1Lon },
                 northCape,
-                { name: "Midpoint_to_Wanganella_Bank", lat: midpoint2Lat, lon: midpoint2Lon },
+                { name: "Midpoint_2", lat: midpoint2Lat, lon: midpoint2Lon },
                 wanganellaBank
             ];
-            
+
             CONFIG.ROUTE_SEGMENTS = [
-                { name: "Opua to Midpoint", from: 0, to: 1, distance_nm: getDistance(CONFIG.WAYPOINTS[0].lat, CONFIG.WAYPOINTS[0].lon, CONFIG.WAYPOINTS[1].lat, CONFIG.WAYPOINTS[1].lon) },
-                { name: "Midpoint to North Cape", from: 1, to: 2, distance_nm: getDistance(CONFIG.WAYPOINTS[1].lat, CONFIG.WAYPOINTS[1].lon, CONFIG.WAYPOINTS[2].lat, CONFIG.WAYPOINTS[2].lon) },
-                { name: "North Cape to Midpoint", from: 2, to: 3, distance_nm: getDistance(CONFIG.WAYPOINTS[2].lat, CONFIG.WAYPOINTS[2].lon, CONFIG.WAYPOINTS[3].lat, CONFIG.WAYPOINTS[3].lon) },
-                { name: "Midpoint to Wanganella Bank", from: 3, to: 4, distance_nm: getDistance(CONFIG.WAYPOINTS[3].lat, CONFIG.WAYPOINTS[3].lon, CONFIG.WAYPOINTS[4].lat, CONFIG.WAYPOINTS[4].lon) },
+                { name: "Opua to Midpoint 1 (Outbound)", from: 0, to: 1, distance_nm: getDistance(CONFIG.WAYPOINTS[0].lat, CONFIG.WAYPOINTS[0].lon, CONFIG.WAYPOINTS[1].lat, CONFIG.WAYPOINTS[1].lon) },
+                { name: "Midpoint 1 to North Cape (Outbound)", from: 1, to: 2, distance_nm: getDistance(CONFIG.WAYPOINTS[1].lat, CONFIG.WAYPOINTS[1].lon, CONFIG.WAYPOINTS[2].lat, CONFIG.WAYPOINTS[2].lon) },
+                { name: "North Cape to Midpoint 2 (Outbound)", from: 2, to: 3, distance_nm: getDistance(CONFIG.WAYPOINTS[2].lat, CONFIG.WAYPOINTS[2].lon, CONFIG.WAYPOINTS[3].lat, CONFIG.WAYPOINTS[3].lon) },
+                { name: "Midpoint 2 to Wanganella Bank (Outbound)", from: 3, to: 4, distance_nm: getDistance(CONFIG.WAYPOINTS[3].lat, CONFIG.WAYPOINTS[3].lon, CONFIG.WAYPOINTS[4].lat, CONFIG.WAYPOINTS[4].lon) },
                 { name: "Fishing Day 1", from: 4, to: 4, distance_nm: 0 },
                 { name: "Fishing Day 2", from: 4, to: 4, distance_nm: 0 },
                 { name: "Fishing Day 3", from: 4, to: 4, distance_nm: 0 },
-                { name: "Wanganella Bank to Midpoint", from: 4, to: 3, distance_nm: getDistance(CONFIG.WAYPOINTS[4].lat, CONFIG.WAYPOINTS[4].lon, CONFIG.WAYPOINTS[3].lat, CONFIG.WAYPOINTS[3].lon) },
-                { name: "Midpoint to North Cape (Return)", from: 3, to: 2, distance_nm: getDistance(CONFIG.WAYPOINTS[3].lat, CONFIG.WAYPOINTS[3].lon, CONFIG.WAYPOINTS[2].lat, CONFIG.WAYPOINTS[2].lon) },
-                { name: "North Cape to Midpoint (Return)", from: 2, to: 1, distance_nm: getDistance(CONFIG.WAYPOINTS[2].lat, CONFIG.WAYPOINTS[2].lon, CONFIG.WAYPOINTS[1].lat, CONFIG.WAYPOINTS[1].lon) },
-                { name: "Midpoint to Opua (Return)", from: 1, to: 0, distance_nm: getDistance(CONFIG.WAYPOINTS[1].lat, CONFIG.WAYPOINTS[1].lon, CONFIG.WAYPOINTS[0].lat, CONFIG.WAYPOINTS[0].lon) },
+                { name: "Wanganella Bank to Midpoint 2 (Return)", from: 4, to: 3, distance_nm: getDistance(CONFIG.WAYPOINTS[4].lat, CONFIG.WAYPOINTS[4].lon, CONFIG.WAYPOINTS[3].lat, CONFIG.WAYPOINTS[3].lon) },
+                { name: "Midpoint 2 to North Cape (Return)", from: 3, to: 2, distance_nm: getDistance(CONFIG.WAYPOINTS[3].lat, CONFIG.WAYPOINTS[3].lon, CONFIG.WAYPOINTS[2].lat, CONFIG.WAYPOINTS[2].lon) },
+                { name: "North Cape to Midpoint 1 (Return)", from: 2, to: 1, distance_nm: getDistance(CONFIG.WAYPOINTS[2].lat, CONFIG.WAYPOINTS[2].lon, CONFIG.WAYPOINTS[1].lat, CONFIG.WAYPOINTS[1].lon) },
+                { name: "Midpoint 1 to Opua (Return)", from: 1, to: 0, distance_nm: getDistance(CONFIG.WAYPOINTS[1].lat, CONFIG.WAYPOINTS[1].lon, CONFIG.WAYPOINTS[0].lat, CONFIG.WAYPOINTS[0].lon) },
             ];
         }
-        
+
         // ===== APP STATE AND CORE LOGIC =====
         const state = {
             db: null,
@@ -223,21 +269,7 @@
         function showMessage(message, type = 'info') {
             console.log(`STATUS: ${message}`);
             const el = elements.statusMessage;
-            el.textContent = message;
-            el.className = `p-4 text-center font-medium rounded-lg mb-4`;
-            switch(type) {
-                case 'success':
-                    el.classList.add('bg-green-100', 'text-green-700');
-                    break;
-                case 'error':
-                    el.classList.add('bg-red-100', 'text-red-700');
-                    break;
-                case 'warning':
-                    el.classList.add('bg-orange-100', 'text-orange-700');
-                    break;
-                default:
-                    el.classList.add('bg-blue-100', 'text-blue-700');
-            }
+            el.innerHTML = `<div class="message-box ${type}">${message}</div>`;
             el.classList.remove('hidden');
         }
 
@@ -342,7 +374,7 @@
             };
             return new Date(timestamp).toLocaleString("en-NZ", options);
         }
-        
+
         async function fetchWithRetry(url) {
             let attempts = 0;
             const maxAttempts = 3;
@@ -368,14 +400,14 @@
                 }
             }
         }
-        
+
         async function fetchWaypointData(waypoint) {
             console.log(`Fetching data for waypoint: ${waypoint.name}`);
             const marineUrl = `${CONFIG.API_URLS.marine}?latitude=${waypoint.lat}&longitude=${waypoint.lon}&hourly=wave_height&forecast_days=${CONFIG.FORECAST_DAYS}&timezone=${CONFIG.TZ}`;
             const weatherUrl = `${CONFIG.API_URLS.weather}?latitude=${waypoint.lat}&longitude=${waypoint.lon}&hourly=wind_speed_10m&forecast_days=${CONFIG.FORECAST_DAYS}&timezone=${CONFIG.TZ}&wind_speed_unit=kn`;
-            
+
             let marineData, weatherData;
-            
+
             try {
                 marineData = await fetchWithRetry(marineUrl);
             } catch(e) {
@@ -407,7 +439,7 @@
                 if (wind === null && wave === null) {
                     continue;
                 }
-                
+
                 combined.push({
                     time: new Date(time).getTime(),
                     wind: wind,
@@ -415,11 +447,11 @@
                     currents: 'N/A' // No currents API for now
                 });
             }
-            
+
             if (combined.length === 0) {
                 throw new Error("No valid data points could be generated.");
             }
-            
+
             console.log(`Successfully fetched ${combined.length} data points for ${waypoint.name}`);
             return combined;
         }
@@ -452,8 +484,8 @@
 
             const baseAnalysis = {
                 name: segment.name,
-                from: fromWp.name,
-                to: toWp.name,
+                from: fromWp.name.replace(/_/g, ' '),
+                to: toWp.name.replace(/_/g, ' '),
                 duration: segment.distance_nm === 0 ? 24 : Math.round(segment.distance_nm / CONFIG.VESSEL.cruising_speed_kts),
                 startTime: "N/A",
                 maxWind: null,
@@ -493,11 +525,11 @@
                 console.warn(`Start index ${startIndex} is out of bounds for waypoint data. Skipping analysis for segment: ${segment.name}`);
                 return baseAnalysis;
             }
-            
+
             // Set max values to null if no data was found
             if (!hasWind) maxWind = null;
             if (!hasWave) maxWave = null;
-            
+
             let safety = "SAFE";
             let conditions = "Good";
 
@@ -588,7 +620,7 @@
                 elements.startDateSelect.appendChild(option);
             }
             elements.startDateSelect.value = state.startDateOffset;
-            
+
             renderDashboard();
             renderTripAnalysis();
             renderFishingForecast();
@@ -631,25 +663,24 @@
             const data = state.allWeatherData;
 
             if (Object.keys(data).length === 0) {
-                contentDiv.innerHTML = '<div class="bg-blue-100 border border-blue-200 rounded-xl p-4 text-blue-700">Please click "Run Analysis" to get the latest weather data.</div>';
+                contentDiv.innerHTML = '<div class="message-box info">Please click "Run Analysis" to get the latest weather data.</div>';
                 return;
             }
-            
+
             let htmlContent = '';
             let failedWaypoints = [];
-            
-            // Loop through the ordered WAYPOINTS array instead of the unordered object keys
+
             CONFIG.WAYPOINTS.forEach(waypoint => {
                 const wpData = data[waypoint.name];
                 if (!wpData) {
                     failedWaypoints.push(waypoint.name);
                     return;
                 }
-                
+
                 const dailySummary = getDailySummary(wpData);
-                let waypointHtml = `<h3 class="text-xl font-bold mb-2 mt-4">${waypoint.name.replace(/_/g, ' ')}</h3>`;
-                waypointHtml += `<div class="space-y-2">`;
-                
+                let waypointHtml = `<h3 class="text-xl font-bold mb-2 mt-4 text-center sm:text-left">${waypoint.name.replace(/_/g, ' ')}</h3>`;
+                waypointHtml += `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">`;
+
                 dailySummary.forEach(day => {
                     const conditions = getConditionsDescription(day.maxWind, day.maxWave);
                     let bgColor = '';
@@ -671,11 +702,11 @@
                             bgColor = 'bg-gray-100';
                     }
                     const cardHtml = `
-                        <div class="${bgColor} border border-gray-200 rounded-xl p-4">
-                            <p class="font-semibold">${day.date}</p>
-                            <p><strong>Wind:</strong> ${day.hasWind ? `${day.minWind.toFixed(1)} - ${day.maxWind.toFixed(1)} kts` : 'N/A'}</p>
-                            <p><strong>Wave:</strong> ${day.hasWave ? `${day.minWave.toFixed(1)} - ${day.maxWave.toFixed(1)} m` : 'N/A'}</p>
-                            <p><strong>Conditions:</strong> ${conditions}</p>
+                        <div class="${bgColor} border border-gray-200 rounded-xl p-4 shadow-sm transition-transform transform hover:scale-105">
+                            <p class="font-semibold text-lg">${day.date}</p>
+                            <p class="text-gray-700"><strong>Wind:</strong> ${day.hasWind ? `${day.minWind.toFixed(1)} - ${day.maxWind.toFixed(1)} kts` : 'N/A'}</p>
+                            <p class="text-gray-700"><strong>Wave:</strong> ${day.hasWave ? `${day.minWave.toFixed(1)} - ${day.maxWave.toFixed(1)} m` : 'N/A'}</p>
+                            <p class="text-gray-900 font-bold">Conditions: <span class="text-gray-700">${conditions}</span></p>
                         </div>
                     `;
                     waypointHtml += cardHtml;
@@ -683,13 +714,13 @@
                 waypointHtml += `</div>`;
                 htmlContent += waypointHtml;
             });
-            
+
             if (failedWaypoints.length > 0) {
-                htmlContent = `<div class="bg-red-100 border border-red-200 rounded-xl p-4 text-red-700 font-bold mb-4">
+                htmlContent = `<div class="message-box error mb-4">
                     ⚠️ Data unavailable for: ${failedWaypoints.map(w => w.replace(/_/g, ' ')).join(', ')}
                     </div>` + htmlContent;
             }
-            
+
             contentDiv.innerHTML = htmlContent;
         }
 
@@ -698,22 +729,22 @@
             contentDiv.innerHTML = '';
 
             if (!state.tripAnalysis) {
-                contentDiv.innerHTML = '<div class="bg-orange-100 border border-orange-200 rounded-xl p-4 text-orange-700">Please run an analysis to see the report.</div>';
+                contentDiv.innerHTML = '<div class="message-box warning">Please run an analysis to see the report.</div>';
                 return;
             }
 
             const analysis = state.tripAnalysis;
-            let recColor = '';
-            if (analysis.recommendation.includes("🟢")) recColor = 'bg-emerald-100 text-emerald-700';
-            else if (analysis.recommendation.includes("🟡")) recColor = 'bg-yellow-100 text-yellow-700';
-            else if (analysis.recommendation.includes("🔴")) recColor = 'bg-red-100 text-red-700';
+            let recClass = '';
+            if (analysis.recommendation.includes("🟢")) recClass = 'bg-emerald-100 text-emerald-700';
+            else if (analysis.recommendation.includes("🟡")) recClass = 'bg-yellow-100 text-yellow-700';
+            else if (analysis.recommendation.includes("🔴")) recClass = 'bg-red-100 text-red-700';
 
             const analysisHtml = `
                 <div class="space-y-4">
-                    <div class="p-4 rounded-xl font-bold text-center ${recColor}">
+                    <div class="p-4 rounded-xl font-bold text-center text-lg ${recClass}">
                         ${analysis.recommendation}
                     </div>
-                    <div class="text-sm text-gray-600 space-y-1">
+                    <div class="p-4 bg-gray-100 rounded-xl text-sm text-gray-700 shadow-inner">
                         <p><strong>Status:</strong> ${analysis.status}</p>
                         <p><strong>Total Trip Duration:</strong> ${analysis.totalHours} hours</p>
                         <p><strong>Start Date:</strong> Day ${analysis.startDay} (${formatDate(new Date().setDate(new Date().getDate() + analysis.startDay - 1))})</p>
@@ -748,11 +779,11 @@
                                     }
                                     return `
                                     <tr class="border-t border-gray-100 text-sm">
-                                        <td class="py-2 px-4">${s.name}</td>
-                                        <td class="py-2 px-4">${s.from.replace(/_/g, ' ')}</td>
+                                        <td class="py-2 px-4 whitespace-nowrap">${s.name}</td>
+                                        <td class="py-2 px-4 whitespace-nowrap">${s.from}</td>
                                         <td class="py-2 px-4">${s.duration}h</td>
                                         <td class="py-2 px-4">${s.maxWind}kt / ${s.maxWave}m</td>
-                                        <td class="py-2 px-4"><span class="block text-center py-1 px-2 rounded-full text-xs font-semibold ${safetyColor}">${s.safety}</span></td>
+                                        <td class="py-2 px-4"><span class="inline-block text-center py-1 px-2 rounded-full text-xs font-semibold ${safetyColor}">${s.safety}</span></td>
                                     </tr>
                                     `;
                                 }).join('')}
@@ -767,8 +798,8 @@
         function renderFishingForecast() {
             const contentDiv = elements.fishingForecastContent;
             contentDiv.innerHTML = '';
-            if (!state.tripAnalysis || (!state.allWeatherData.Wanganella_Bank)) {
-                contentDiv.innerHTML = '<div class="bg-orange-100 border border-orange-200 rounded-xl p-4 text-orange-700">Please run an analysis to see the fishing forecast.</div>';
+            if (!state.tripAnalysis || !state.allWeatherData.Wanganella_Bank) {
+                contentDiv.innerHTML = '<div class="message-box warning">Please run an analysis to see the fishing forecast.</div>';
                 return;
             }
 
@@ -779,7 +810,13 @@
             const fishingDays = [];
             const fishingSegments = CONFIG.ROUTE_SEGMENTS.filter(seg => seg.name.includes("Fishing Day"));
 
-            let totalOutboundHours = CONFIG.ROUTE_SEGMENTS.slice(0, CONFIG.ROUTE_SEGMENTS.indexOf(fishingSegments[0])).reduce((sum, seg) => sum + seg.duration, 0);
+            let totalOutboundHours = 0;
+            for (const segment of CONFIG.ROUTE_SEGMENTS) {
+                if (segment.name.includes("Fishing Day")) {
+                    break;
+                }
+                totalOutboundHours += segment.duration;
+            }
 
             fishingSegments.forEach((segment, index) => {
                 const bankData = banksData.Wanganella_Bank;
@@ -878,16 +915,16 @@
             elements.runAnalysisBtn.disabled = true;
             elements.runAnalysisBtn.textContent = 'Fetching Data...';
             try {
-                showMessage('Fetching live weather data and running analysis...', 'info');
+                showMessage('🚀 Fetching live weather data and running analysis...', 'info');
                 await saveSettings();
                 state.allWeatherData = await fetchAllWaypointWeather();
-                showMessage('Data fetch complete. Running trip analysis...', 'info');
+                showMessage('✅ Data fetch complete. Running trip analysis...', 'info');
                 state.tripAnalysis = analyzeTrip(state.allWeatherData, state.startDateOffset);
-                showMessage('Analysis complete!', 'success');
+                showMessage('✨ Analysis complete!', 'success');
                 renderUI();
             } catch (error) {
                 console.error("Analysis failed:", error);
-                showMessage('Analysis failed. Please check the console for details.', 'error');
+                showMessage('⚠️ Analysis failed. Please check the console for details.', 'error');
             } finally {
                 elements.runAnalysisBtn.disabled = false;
                 elements.runAnalysisBtn.textContent = 'Run Analysis';
@@ -898,10 +935,10 @@
             hideMessage();
             state.allWeatherData = {};
             state.tripAnalysis = null;
-            showMessage('All local data cleared.', 'info');
+            showMessage('Data cleared. You can run a new analysis.', 'info');
             renderUI();
         });
-        
+
         elements.startDateSelect.addEventListener('change', (e) => {
             state.startDateOffset = parseInt(e.target.value);
         });
