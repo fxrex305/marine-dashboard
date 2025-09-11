@@ -255,8 +255,15 @@
             elements.statusMessage.classList.add('hidden');
         }
 
+        function setButtonState(disabled) {
+            elements.runAnalysisBtn.disabled = disabled;
+            elements.clearCacheBtn.disabled = disabled;
+        }
+
         // --- Firebase Functions ---
         async function initializeFirebase() {
+            console.log("Initializing Firebase...");
+            setButtonState(true);
             try {
                 const app = initializeApp(firebaseConfig);
                 state.db = getFirestore(app);
@@ -275,11 +282,8 @@
                         elements.userIdDisplay.textContent = `Signed in anonymously.`;
                     }
                     
-                    // Enable buttons once auth state is confirmed
-                    elements.runAnalysisBtn.disabled = false;
-                    elements.clearCacheBtn.disabled = false;
-                    showMessage("App ready! You can now run an analysis.", "success");
-
+                    showMessage("App is ready! You can now run an analysis.", "success");
+                    setButtonState(false);
                     renderUI();
                 });
 
@@ -809,7 +813,7 @@
         // --- Event Listeners and Main App Flow ---
         elements.runAnalysisBtn.addEventListener('click', async () => {
             hideMessage();
-            elements.runAnalysisBtn.disabled = true;
+            setButtonState(true);
             elements.runAnalysisBtn.textContent = 'Fetching Data...';
             try {
                 showMessage('🚀 Fetching live weather data and running analysis...', 'info');
@@ -823,7 +827,7 @@
                 console.error("Analysis failed:", error);
                 showMessage('⚠️ Analysis failed. Please check the console for details.', 'error');
             } finally {
-                elements.runAnalysisBtn.disabled = false;
+                setButtonState(false);
                 elements.runAnalysisBtn.textContent = 'Run Analysis';
             }
         });
