@@ -810,7 +810,7 @@
                 const bankData = banksData.Wanganella_Bank;
                 if (!bankData) return;
 
-                const fishingStartIndex = (state.startDateOffset * (24/CONFIG.INTERVAL_HOURS)) + Math.ceil(totalOutboundHours / CONFIG.VESSEL.cruising_speed_kts) + (index * (24/CONFIG.INTERVAL_HOURS));
+                const fishingStartIndex = (state.startDateOffset * (24/CONFIG.INTERVAL_HOURS)) + Math.ceil(totalOutboundHours / CONFIG.INTERVAL_HOURS) + (index * (24/CONFIG.INTERVAL_HOURS));
 
                 const fishingDayNumber = index + 1;
                 let maxWind = 0, maxWave = 0, goodHours = 0;
