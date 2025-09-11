@@ -787,7 +787,6 @@
             const contentDiv = elements.fishingForecastContent;
             contentDiv.innerHTML = '';
             
-            // Get the data for the Wanganella Bank waypoint
             const wanganellaData = state.allWeatherData.Wanganella_Bank;
 
             if (!state.tripAnalysis || !wanganellaData || wanganellaData.length === 0) {
@@ -798,7 +797,6 @@
             const fishingDays = [];
             const fishingSegments = CONFIG.ROUTE_SEGMENTS.filter(seg => seg.name.includes("Fishing Day"));
 
-            // Calculate total hours for the outbound journey
             let totalOutboundHours = 0;
             for (const segment of CONFIG.ROUTE_SEGMENTS) {
                 if (segment.name.includes("Fishing Day")) {
@@ -806,31 +804,35 @@
                 }
                 totalOutboundHours += segment.duration;
             }
+            
+            // Check if the trip is too far in the future for data
+            const firstFishingDayHours = (state.startDateOffset * 24) + totalOutboundHours;
+            const firstFishingDayIndex = Math.floor(firstFishingDayHours / CONFIG.INTERVAL_HOURS);
+            if (firstFishingDayIndex >= wanganellaData.length) {
+                contentDiv.innerHTML = '<div class="message-box error">⚠️ The selected trip date is too far in the future. Marine weather data is only available for up to 14 days ahead. Please select an earlier start date.</div>';
+                return;
+            }
 
             fishingSegments.forEach((segment, index) => {
-                // Calculate the start hour for the current fishing day
-                // This logic was the source of the bug and is now corrected
                 const tripStartHours = state.startDateOffset * 24;
                 const fishingStartHours = tripStartHours + totalOutboundHours + (index * 24);
                 const fishingStartIndex = Math.floor(fishingStartHours / CONFIG.INTERVAL_HOURS);
 
-                let maxWind = 0, maxWave = 0, goodHours = 0;
+                let maxWind = null, maxWave = null, goodHours = 0;
                 let fishingDate = "N/A";
-                let hasWind = false;
-                let hasWave = false;
+                let hasData = false;
 
-                if (fishingStartIndex >= 0 && fishingStartIndex < wanganellaData.length) {
+                if (fishingStartIndex < wanganellaData.length) {
                     fishingDate = formatDate(wanganellaData[fishingStartIndex].time);
                     for (let i = fishingStartIndex; i < Math.min(fishingStartIndex + (24 / CONFIG.INTERVAL_HOURS), wanganellaData.length); i++) {
                         const data = wanganellaData[i];
-                        if (data) {
+                        if (data && (data.wind !== null || data.wave !== null)) {
+                            hasData = true;
                             if (data.wind !== null) {
-                                maxWind = Math.max(maxWind, data.wind);
-                                hasWind = true;
+                                maxWind = (maxWind === null) ? data.wind : Math.max(maxWind, data.wind);
                             }
                             if (data.wave !== null) {
-                                maxWave = Math.max(maxWave, data.wave);
-                                hasWave = true;
+                                maxWave = (maxWave === null) ? data.wave : Math.max(maxWave, data.wave);
                             }
                             if (data.wind !== null && data.wave !== null && data.wind < 15 && data.wave < 1.5) {
                                 goodHours += CONFIG.INTERVAL_HOURS;
@@ -839,17 +841,14 @@
                     }
                 }
 
-                const quality = goodHours >= 12 ? "Excellent" :
-                                goodHours >= 8 ? "Good" :
-                                goodHours >= 4 ? "Fair" : "Poor";
+                const quality = hasData ? (goodHours >= 12 ? "Excellent" : goodHours >= 8 ? "Good" : goodHours >= 4 ? "Fair" : "Poor") : "N/A";
 
                 fishingDays.push({
-                    day: index + 1,
                     bank: 'Wanganella Bank',
                     date: fishingDate,
-                    maxWind: hasWind ? maxWind.toFixed(1) : 'N/A',
-                    maxWave: hasWave ? maxWave.toFixed(1) : 'N/A',
-                    goodHours,
+                    maxWind: maxWind !== null ? maxWind.toFixed(1) : 'N/A',
+                    maxWave: maxWave !== null ? maxWave.toFixed(1) : 'N/A',
+                    goodHours: hasData ? goodHours : 'N/A',
                     quality
                 });
             });
@@ -860,7 +859,6 @@
                         <thead class="bg-gray-200 text-sm">
                             <tr>
                                 <th class="py-2 px-4 text-left">Bank</th>
-                                <th class="py-2 px-4 text-left">Trip Day</th>
                                 <th class="py-2 px-4 text-left">Date</th>
                                 <th class="py-2 px-4 text-left">Max Wind (kts)</th>
                                 <th class="py-2 px-4 text-left">Max Wave (m)</th>
@@ -876,11 +874,11 @@
                                     case 'Good': qualityColor = 'bg-yellow-200'; break;
                                     case 'Fair': qualityColor = 'bg-orange-200'; break;
                                     case 'Poor': qualityColor = 'bg-red-200'; break;
+                                    default: qualityColor = 'bg-gray-200';
                                 }
                                 return `
                                 <tr class="border-t border-gray-100 text-sm">
                                     <td class="py-2 px-4">${day.bank}</td>
-                                    <td class="py-2 px-4">${day.day}</td>
                                     <td class="py-2 px-4">${day.date}</td>
                                     <td class="py-2 px-4">${day.maxWind}</td>
                                     <td class="py-2 px-4">${day.maxWave}</td>
