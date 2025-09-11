@@ -784,14 +784,22 @@
         }
 
         function renderFishingForecast() {
+            console.log("Rendering Fishing Forecast...");
             const contentDiv = elements.fishingForecastContent;
             contentDiv.innerHTML = '';
             
-            const wanganellaData = state.allWeatherData.Wanganella_Bank;
-
-            if (!state.tripAnalysis || !wanganellaData || wanganellaData.length === 0) {
+            if (!state.tripAnalysis) {
+                console.log("Fishing Forecast: No trip analysis found.");
                 contentDiv.innerHTML = '<div class="message-box warning">Please run an analysis to see the fishing forecast.</div>';
                 return;
+            }
+
+            const wanganellaData = state.allWeatherData.Wanganella_Bank;
+            console.log("Wanganella Bank data is:", wanganellaData);
+
+            if (!wanganellaData || wanganellaData.length === 0) {
+                 contentDiv.innerHTML = '<div class="message-box error">⚠️ Data for Wanganella Bank could not be loaded. Please try again.</div>';
+                 return;
             }
 
             const fishingDays = [];
@@ -904,7 +912,7 @@
                 showMessage('🚀 Fetching live weather data and running analysis...', 'info');
                 await saveSettings();
                 state.allWeatherData = await fetchAllWaypointWeather();
-                showMessage('✅ Data fetch complete. Running trip analysis...', 'info');
+                showMessage('✅ Data fetch complete. Running trip analysis...', 'success');
                 state.tripAnalysis = analyzeTrip(state.allWeatherData, state.startDateOffset);
                 showMessage('✨ Analysis complete!', 'success');
                 renderUI();
