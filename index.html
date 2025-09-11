@@ -3,579 +3,568 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ian's Marine Weather Forecast</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Marine Weather Dashboard - M/V Distinction</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        :root {
+            --primary: #1a5f7a;
+            --secondary: #1597bb;
+            --accent: #ffc107;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --success: #28a745;
+            --info: #17a2b8;
+            --sea-blue: #0a4a6d;
+            --wave-blue: #4facfe;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
-            color: #1f2937;
+            background: linear-gradient(to bottom, var(--sea-blue), var(--wave-blue));
+            color: var(--light);
+            min-height: 100vh;
+            padding-bottom: 2rem;
         }
+        
         .container {
-            max-width: 800px;
-            margin: 2rem auto;
-            min-height: 95vh;
-            display: flex;
-            flex-direction: column;
-            background-color: #ffffff;
-            border-radius: 1.5rem;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            overflow: hidden;
-            border: 1px solid #e5e7eb;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
         }
-        .tab-content {
-            display: none;
-            flex-grow: 1;
+        
+        header {
+            text-align: center;
+            padding: 2rem 0;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 2px solid var(--accent);
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
             padding: 1.5rem;
-            overflow-y: auto;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.18);
         }
-        .tab-content.active {
+        
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent);
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
         }
-        .tab-button {
-            transition: all 0.3s ease;
+        
+        .control-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        
+        select, input, button {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 5px;
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--dark);
+            font-size: 1rem;
+        }
+        
+        button {
+            background: var(--accent);
+            color: var(--dark);
+            font-weight: bold;
             cursor: pointer;
-            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            border: none;
         }
-        .tab-button.active {
-            border-color: #10b981;
-            color: #10b981;
-            font-weight: 600;
+        
+        button:hover {
+            background: #e0a800;
+            transform: translateY(-2px);
         }
-        .message-box {
+        
+        .btn-primary {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #138496;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+        
+        .waypoint-card {
+            text-align: center;
             padding: 1rem;
-            border-radius: 0.75rem;
-            font-weight: 500;
+        }
+        
+        .weather-icon {
+            font-size: 3rem;
+            margin: 1rem 0;
+        }
+        
+        .conditions {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+        
+        .safe {
+            color: var(--success);
+        }
+        
+        .marginal {
+            color: var(--warning);
+        }
+        
+        .dangerous {
+            color: var(--danger);
+        }
+        
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .data-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 5px;
             text-align: center;
         }
-        .message-box.info {
-            background-color: #d1e5f8;
-            color: #2c5282;
+        
+        .data-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
         }
-        .message-box.success {
-            background-color: #d4edda;
-            color: #155724;
+        
+        .data-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
         }
-        .message-box.error {
-            background-color: #f8d7da;
-            color: #721c24;
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background: rgba(255, 255, 255, 0.1);
         }
-        .message-box.warning {
-            background-color: #fff3cd;
-            color: #856404;
+        
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-        /* Custom scrollbar for a cleaner look */
-        ::-webkit-scrollbar {
-            width: 8px;
+        
+        th {
+            background: rgba(0, 0, 0, 0.2);
+            font-weight: bold;
         }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
+        
+        tr:hover {
+            background: rgba(255, 255, 255, 0.05);
         }
-        ::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 10px;
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #555;
+        
+        .status-safe {
+            background: var(--success);
+        }
+        
+        .status-marginal {
+            background: var(--warning);
+        }
+        
+        .status-dangerous {
+            background: var(--danger);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            font-size: 1.2rem;
+        }
+        
+        .loading i {
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .recommendation {
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .recommendation-safe {
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid var(--success);
+        }
+        
+        .recommendation-warning {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid var(--warning);
+        }
+        
+        .recommendation-danger {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid var(--danger);
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .control-panel {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-blue-500 to-cyan-500 p-4 min-h-screen flex items-center justify-center">
-
+<body>
     <div class="container">
-        <!-- Header -->
-        <header class="p-6 bg-white border-b border-gray-200 text-center">
-            <h1 class="text-3xl font-bold text-gray-800">⚓ Ian's Marine Weather Forecast</h1>
-            <p class="text-lg text-gray-600">(Wanganella Banks)</p>
-            <p id="user-id-display" class="mt-2 text-xs text-gray-400"></p>
+        <header>
+            <h1><i class="fas fa-ship"></i> Marine Weather Dashboard</h1>
+            <p class="subtitle">M/V Distinction - Fishing Trip Planner</p>
         </header>
-
-        <!-- Loading and Message Area -->
-        <div id="status-message" class="p-4 hidden"></div>
-
-        <!-- Start Date and Action Controls -->
-        <div class="p-6 bg-white border-b border-gray-200">
-            <div class="flex flex-col space-y-4">
-                <div class="flex-1 w-full sm:w-auto">
-                    <label for="start-date" class="block text-sm font-medium text-gray-700">Trip Start Date:</label>
-                    <select id="start-date" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm rounded-md shadow-sm"></select>
+        
+        <div class="control-panel">
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-cog"></i> Trip Settings</h2>
+                <div class="form-group">
+                    <label for="start-date">Start Date:</label>
+                    <select id="start-date">
+                        <option value="0">Today</option>
+                        <option value="1">Tomorrow (Day 2)</option>
+                        <option value="2">Day 3</option>
+                        <option value="3">Day 4</option>
+                        <option value="4">Day 5</option>
+                        <option value="5">Day 6</option>
+                        <option value="6">Day 7</option>
+                        <option value="7">Day 8</option>
+                        <option value="8">Day 9</option>
+                    </select>
                 </div>
-                <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                    <button id="run-analysis" class="w-full sm:w-auto px-6 py-3 bg-emerald-600 text-white rounded-lg shadow-md hover:bg-emerald-700 transition-colors duration-200 text-base font-semibold" disabled>Run Analysis</button>
-                    <button id="clear-cache" class="w-full sm:w-auto px-6 py-3 bg-gray-200 text-gray-700 rounded-lg shadow-md hover:bg-gray-300 transition-colors duration-200 text-base font-semibold" disabled>Clear Data</button>
+                <button id="update-weather" class="btn-primary">
+                    <i class="fas fa-cloud-download-alt"></i> Update Weather Data
+                </button>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-info-circle"></i> Vessel Information</h2>
+                <div class="data-grid">
+                    <div class="data-item">
+                        <div class="data-label">Vessel Name</div>
+                        <div class="data-value">M/V Distinction</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">Cruising Speed</div>
+                        <div class="data-value">8 kts</div>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <!-- Tabs -->
-        <nav class="flex justify-around bg-gray-50 border-b border-gray-200 text-gray-500 font-medium">
-            <button class="tab-button active flex-1 py-4 text-center" data-tab="dashboard">Dashboard</button>
-            <button class="tab-button flex-1 py-4 text-center" data-tab="trip-analysis">Trip Analysis</button>
-        </nav>
-
-        <!-- Main Content Area (Tab Content) -->
-        <main class="flex-1 p-4 overflow-y-auto">
-            <!-- Dashboard Tab -->
-            <div id="dashboard" class="tab-content active">
-                <h2 class="text-2xl font-bold mb-4 text-gray-800">Current Waypoint Conditions</h2>
-                <div id="dashboard-content" class="space-y-4">
-                    <div class="message-box info">Please click "Run Analysis" to get the latest weather data.</div>
+        
+        <div class="card">
+            <h2 class="card-title"><i class="fas fa-map-marked-alt"></i> Route Overview</h2>
+            <div id="route-info">
+                <p>Opua → North Cape → Three Kings → Midpoint → Wanganella Banks → Fishing Days → Return</p>
+                <div class="data-grid">
+                    <div class="data-item">
+                        <div class="data-label">Total Distance</div>
+                        <div class="data-value">~730 NM</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">Estimated Duration</div>
+                        <div class="data-value">6-8 days</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">Fishing Days</div>
+                        <div class="data-value">3 days</div>
+                    </div>
                 </div>
             </div>
-
-            <!-- Trip Analysis Tab -->
-            <div id="trip-analysis" class="tab-content">
-                <h2 class="text-2xl font-bold mb-4 text-gray-800">Fishing Trip Analysis</h2>
-                <div id="trip-analysis-content" class="space-y-4">
-                    <div class="message-box warning">Please run an analysis to see the report.</div>
+        </div>
+        
+        <div class="card">
+            <h2 class="card-title"><i class="fas fa-wind"></i> Current Conditions at Waypoints</h2>
+            <div id="weather-dashboard" class="dashboard-grid">
+                <div class="loading">
+                    <i class="fas fa-spinner"></i> Loading weather data...
                 </div>
             </div>
-        </main>
+        </div>
+        
+        <div class="card">
+            <h2 class="card-title"><i class="fas fa-binoculars"></i> Trip Analysis</h2>
+            <button id="analyze-trip">
+                <i class="fas fa-chart-line"></i> Analyze Complete Trip
+            </button>
+            <div id="trip-analysis">
+                <div class="loading hidden">
+                    <i class="fas fa-spinner"></i> Analyzing trip conditions...
+                </div>
+                <div id="analysis-results" class="hidden">
+                    <!-- Results will be inserted here -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2 class="card-title"><i class="fas fa-fish"></i> Wanganella Banks Fishing Forecast</h2>
+            <div id="fishing-forecast">
+                <div class="loading hidden">
+                    <i class="fas fa-spinner"></i> Loading fishing forecast...
+                </div>
+                <div id="fishing-results" class="hidden">
+                    <!-- Results will be inserted here -->
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Firebase SDKs -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, query, where, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        setLogLevel('Debug');
-
-        // Global variables for Firebase config and App ID
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-        // --- CONFIGURATION ---
-        // Enhanced config based on the provided Google Apps Script
+    <script>
+        // Configuration - matches your Google Sheets script
         const CONFIG = {
-          FORECAST_DAYS: 14,
-          INTERVAL_HOURS: 3,
-          VESSEL: {
-            name: "M/V Distinction",
-            cruising_speed_kts: 8
-          },
-          THRESHOLDS: {
+            FORECAST_DAYS: 14,
+            INTERVAL_HOURS: 3,
+            
+            VESSEL: {
+                name: "M/V Distinction",
+                cruising_speed_kts: 8
+            },
+            
+            WAYPOINTS: [
+                { name: "Opua", lat: -35.3085, lon: 174.1218 },
+                { name: "North_Cape", lat: -34.4167, lon: 173.0333 },
+                { name: "Three_Kings", lat: -34.1667, lon: 172.1667 },
+                { name: "Midpoint", lat: -33.5834, lon: 169.8334 },
+                { name: "Wanganella_Banks", lat: -33.0000, lon: 167.5000 }
+            ],
+            
+            ROUTE_SEGMENTS: [
+                { name: "Opua to North Cape", from: 0, to: 1, distance_nm: 76 },
+                { name: "North Cape to Three Kings", from: 1, to: 2, distance_nm: 46 },
+                { name: "Three Kings to Midpoint", from: 2, to: 3, distance_nm: 121 },
+                { name: "Midpoint to Wanganella", from: 3, to: 4, distance_nm: 122 },
+                { name: "Fishing Day 1", from: 4, to: 4, distance_nm: 0 },
+                { name: "Fishing Day 2", from: 4, to: 4, distance_nm: 0 },
+                { name: "Fishing Day 3", from: 4, to: 4, distance_nm: 0 },
+                { name: "Return to Midpoint", from: 4, to: 3, distance_nm: 122 },
+                { name: "Midpoint to Three Kings", from: 3, to: 2, distance_nm: 121 },
+                { name: "Three Kings to North Cape", from: 2, to: 1, distance_nm: 46 },
+                { name: "North Cape to Opua", from: 1, to: 0, distance_nm: 76 }
+            ],
+            
+            API_SOURCES: {
+                MARINE: "https://marine-api.open-meteo.com/v1/marine",
+                WEATHER: "https://api.open-meteo.com/v1/forecast"
+            },
+            
+            TZ: "Pacific/Auckland"
+        };
+
+        const SAFETY_THRESHOLDS = {
             DANGEROUS: { wind: 30, wave: 3.5 },
             MARGINAL: { wind: 20, wave: 2.5 },
             ACCEPTABLE: { wind: 15, wave: 1.5 }
-          },
-          // Waypoints are now dynamic with a new Midpoint
-          WAYPOINTS: [],
-          ROUTE_SEGMENTS: [],
-          TZ: "Pacific/Auckland",
-          API_URLS: {
-            marine: 'https://marine-api.open-meteo.com/v1/marine',
-            weather: 'https://api.open-meteo.com/v1/forecast',
-            currents: ''
-          }
         };
 
-        // Static Waypoint Definitions
-        const STATIC_WAYPOINTS = [
-            { name: "Opua", lat: -35.3085, lon: 174.1218 },
-            { name: "North_Cape", lat: -34.4167, lon: 173.0333 },
-            { name: "Wanganella_Bank", lat: -32.55, lon: 167.31 },
-        ];
+        // DOM elements
+        const startDateSelect = document.getElementById('start-date');
+        const updateWeatherBtn = document.getElementById('update-weather');
+        const analyzeTripBtn = document.getElementById('analyze-trip');
+        const weatherDashboard = document.getElementById('weather-dashboard');
+        const analysisResults = document.getElementById('analysis-results');
+        const fishingResults = document.getElementById('fishing-results');
 
-        // --- DYNAMIC WAYPOINT AND ROUTE GENERATION ---
-        function getDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371; // Earth radius in km
-            const dLat = (lat2 - lat1) * Math.PI / 180;
-            const dLon = (lon2 - lon1) * Math.PI / 180;
-            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                      Math.sin(dLon / 2) * Math.sin(dLon / 2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            const distanceKm = R * c;
-            return distanceKm * 0.539957; // Convert km to nautical miles (nm)
-        }
+        // Event listeners
+        updateWeatherBtn.addEventListener('click', updateMarineWeather);
+        analyzeTripBtn.addEventListener('click', analyzeCompleteTrip);
 
-        function generateTripWaypoints() {
-            // Calculate midpoint coordinates between North Cape and Wanganella Bank
-            const northCape = STATIC_WAYPOINTS[1];
-            const wanganellaBank = STATIC_WAYPOINTS[2];
-            const midpointLat = (northCape.lat + wanganellaBank.lat) / 2;
-            const midpointLon = (northCape.lon + wanganellaBank.lon) / 2;
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            updateMarineWeather();
+        });
 
-            CONFIG.WAYPOINTS = [
-                STATIC_WAYPOINTS[0],
-                northCape,
-                { name: "Midpoint", lat: midpointLat, lon: midpointLon },
-                wanganellaBank
-            ];
-
-            CONFIG.ROUTE_SEGMENTS = [
-                { name: "Opua to North Cape (Outbound)", from: 0, to: 1, distance_nm: getDistance(CONFIG.WAYPOINTS[0].lat, CONFIG.WAYPOINTS[0].lon, CONFIG.WAYPOINTS[1].lat, CONFIG.WAYPOINTS[1].lon) },
-                { name: "North Cape to Midpoint (Outbound)", from: 1, to: 2, distance_nm: getDistance(CONFIG.WAYPOINTS[1].lat, CONFIG.WAYPOINTS[1].lon, CONFIG.WAYPOINTS[2].lat, CONFIG.WAYPOINTS[2].lon) },
-                { name: "Midpoint to Wanganella Bank (Outbound)", from: 2, to: 3, distance_nm: getDistance(CONFIG.WAYPOINTS[2].lat, CONFIG.WAYPOINTS[2].lon, CONFIG.WAYPOINTS[3].lat, CONFIG.WAYPOINTS[3].lon) },
-                { name: "Fishing Day 1", from: 3, to: 3, distance_nm: 0 },
-                { name: "Fishing Day 2", from: 3, to: 3, distance_nm: 0 },
-                { name: "Fishing Day 3", from: 3, to: 3, distance_nm: 0 },
-                { name: "Wanganella Bank to Midpoint (Return)", from: 3, to: 2, distance_nm: getDistance(CONFIG.WAYPOINTS[3].lat, CONFIG.WAYPOINTS[3].lon, CONFIG.WAYPOINTS[2].lat, CONFIG.WAYPOINTS[2].lon) },
-                { name: "Midpoint to North Cape (Return)", from: 2, to: 1, distance_nm: getDistance(CONFIG.WAYPOINTS[2].lat, CONFIG.WAYPOINTS[2].lon, CONFIG.WAYPOINTS[1].lat, CONFIG.WAYPOINTS[1].lon) },
-                { name: "North Cape to Opua (Return)", from: 1, to: 0, distance_nm: getDistance(CONFIG.WAYPOINTS[1].lat, CONFIG.WAYPOINTS[1].lon, CONFIG.WAYPOINTS[0].lat, CONFIG.WAYPOINTS[0].lon) },
-            ];
-        }
-
-        // ===== APP STATE AND CORE LOGIC =====
-        const state = {
-            db: null,
-            auth: null,
-            userId: null,
-            isAuthReady: false,
-            startDateOffset: 0,
-            allWeatherData: {},
-            tripAnalysis: null,
-        };
-
-        const elements = {
-            statusMessage: document.getElementById('status-message'),
-            startDateSelect: document.getElementById('start-date'),
-            runAnalysisBtn: document.getElementById('run-analysis'),
-            clearCacheBtn: document.getElementById('clear-cache'),
-            userIdDisplay: document.getElementById('user-id-display'),
-            tabButtons: document.querySelectorAll('.tab-button'),
-            tabContents: document.querySelectorAll('.tab-content'),
-            dashboardContent: document.getElementById('dashboard-content'),
-            tripAnalysisContent: document.getElementById('trip-analysis-content'),
-        };
-
-        function showMessage(message, type = 'info') {
-            console.log(`STATUS: ${message}`);
-            const el = elements.statusMessage;
-            el.innerHTML = `<div class="message-box ${type}">${message}</div>`;
-            el.classList.remove('hidden');
-        }
-
-        function hideMessage() {
-            elements.statusMessage.classList.add('hidden');
-        }
-
-        function setButtonState(disabled) {
-            elements.runAnalysisBtn.disabled = disabled;
-            elements.clearCacheBtn.disabled = disabled;
-        }
-
-        // --- Firebase Functions ---
-        async function initializeFirebase() {
-            console.log("Initializing Firebase...");
-            setButtonState(true);
+        // Main functions
+        async function updateMarineWeather() {
+            showLoading(weatherDashboard);
+            
             try {
-                const app = initializeApp(firebaseConfig);
-                state.db = getFirestore(app);
-                state.auth = getAuth(app);
-
-                onAuthStateChanged(state.auth, async (user) => {
-                    console.log("Auth state changed. User:", user ? user.uid : "anonymous");
-                    state.isAuthReady = true;
-
-                    if (user) {
-                        state.userId = user.uid;
-                        elements.userIdDisplay.textContent = `User ID: ${state.userId}`;
-                        await loadSettings();
-                    } else {
-                        state.userId = crypto.randomUUID();
-                        elements.userIdDisplay.textContent = `Signed in anonymously.`;
-                    }
-                    
-                    showMessage("App is ready! You can now run an analysis.", "success");
-                    setButtonState(false);
-                    renderUI();
-                });
-
-                if (initialAuthToken) {
-                    await signInWithCustomToken(state.auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(state.auth);
-                }
-
-                console.log("Firebase initialization initiated.");
+                const weatherData = await fetchAllWaypointWeather();
+                updateDashboard(weatherData);
             } catch (error) {
-                console.error("Firebase initialization error:", error);
-                showMessage("Failed to initialize Firebase. Please try again later.", 'error');
+                weatherDashboard.innerHTML = `
+                    <div class="error">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        Failed to load weather data: ${error.message}
+                    </div>
+                `;
             }
         }
 
-        async function saveSettings() {
-            if (!state.isAuthReady || !state.userId || !state.auth.currentUser) {
-                console.log("Auth not ready or user not signed in. Cannot save settings.");
-                return;
-            }
+        async function analyzeCompleteTrip() {
+            const startOffset = parseInt(startDateSelect.value);
+            showLoading(document.querySelector('#trip-analysis .loading'));
+            showLoading(document.querySelector('#fishing-forecast .loading'));
+            
             try {
-                const settingsDocRef = doc(state.db, `artifacts/${appId}/users/${state.userId}/app_settings/main`);
-                await setDoc(settingsDocRef, {
-                    startDateOffset: state.startDateOffset
-                });
-                console.log("Settings saved to Firestore.");
+                const weatherData = await fetchAllWaypointWeather();
+                const analysis = analyzeTrip(weatherData, startOffset);
+                updateTripAnalysis(analysis, startOffset);
+                analyzeWanganellaFishing(weatherData["Wanganella_Banks"], startOffset);
             } catch (error) {
-                console.error("Failed to save settings:", error);
+                analysisResults.innerHTML = `
+                    <div class="error">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        Failed to analyze trip: ${error.message}
+                    </div>
+                `;
             }
         }
 
-        async function loadSettings() {
-            if (!state.isAuthReady || !state.userId) {
-                console.log("Auth not ready. Cannot load settings.");
-                return;
-            }
-            try {
-                console.log("Attempting to load settings for userId:", state.userId);
-                const settingsDocRef = doc(state.db, `artifacts/${appId}/users/${state.userId}/app_settings/main`);
-                const docSnap = await getDoc(settingsDocRef);
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    state.startDateOffset = data.startDateOffset || 0;
-                    elements.startDateSelect.value = state.startDateOffset;
-                    console.log("Settings loaded from Firestore:", data);
-                } else {
-                    console.log("No settings found in Firestore. Using default values.");
-                }
-            } catch (error) {
-                console.error("Failed to load settings:", error);
-            }
-        }
-
-        // --- API Data and Logic from Script ---
-        // This function now provides a more detailed status based on the thresholds
-        function getConditionsDescription(wind, wave) {
-            if (wind === null || wave === null) return "Data Unavailable";
-            if (wind > CONFIG.THRESHOLDS.DANGEROUS.wind || wave > CONFIG.THRESHOLDS.DANGEROUS.wave) return "Dangerous";
-            if (wind > CONFIG.THRESHOLDS.MARGINAL.wind || wave > CONFIG.THRESHOLDS.MARGINAL.wave) return "Rough";
-            if (wind > CONFIG.THRESHOLDS.ACCEPTABLE.wind || wave > CONFIG.THRESHOLDS.ACCEPTABLE.wave) return "Moderate";
-            return "Favorable";
-        }
-        
-        // This function assigns a color based on the condition status
-        function getStatusColorClass(status) {
-            switch(status) {
-                case "Dangerous":
-                    return "bg-red-500 text-white";
-                case "Rough":
-                    return "bg-orange-500 text-white";
-                case "Moderate":
-                    return "bg-lime-500 text-gray-900";
-                case "Favorable":
-                    return "bg-emerald-500 text-white";
-                default:
-                    return "bg-gray-500 text-white";
-            }
-        }
-
-        function formatDate(timestamp) {
-            return new Date(timestamp).toLocaleDateString("en-NZ", { timeZone: CONFIG.TZ });
-        }
-        
-        function formatDateTime(timestamp) {
-            const options = {
-                weekday: 'short',
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false,
-                timeZone: CONFIG.TZ
-            };
-            return new Date(timestamp).toLocaleString("en-NZ", options);
-        }
-
-        function formatTime(timestamp) {
-            const options = {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false,
-                timeZone: CONFIG.TZ
-            };
-            return new Date(timestamp).toLocaleString("en-NZ", options);
-        }
-
-        async function fetchWithRetry(url) {
-            let attempts = 0;
-            const maxAttempts = 3;
-            const initialDelay = 1000;
-
-            while (attempts < maxAttempts) {
-                try {
-                    const response = await fetch(url);
-                    if (!response.ok) {
-                        throw new Error(`API returned status ${response.status}: ${response.statusText}`);
-                    }
-                    return await response.json();
-                } catch (error) {
-                    console.error(`Attempt ${attempts + 1} failed for ${url}:`, error);
-                    attempts++;
-                    if (attempts < maxAttempts) {
-                        const delay = initialDelay * Math.pow(2, attempts - 1);
-                        console.log(`Retrying in ${delay}ms...`);
-                        await new Promise(resolve => setTimeout(resolve, delay));
-                    } else {
-                        throw new Error(`Failed to fetch data after ${maxAttempts} attempts: ${error.message}`);
-                    }
-                }
-            }
-        }
-
-        async function fetchWaypointData(waypoint) {
-            console.log(`Fetching data for waypoint: ${waypoint.name}`);
-            const marineUrl = `${CONFIG.API_URLS.marine}?latitude=${waypoint.lat}&longitude=${waypoint.lon}&hourly=wave_height&forecast_days=${CONFIG.FORECAST_DAYS}&timezone=${CONFIG.TZ}`;
-            const weatherUrl = `${CONFIG.API_URLS.weather}?latitude=${waypoint.lat}&longitude=${waypoint.lon}&hourly=wind_speed_10m&forecast_days=${CONFIG.FORECAST_DAYS}&timezone=${CONFIG.TZ}&wind_speed_unit=kn`;
-
-            let marineData, weatherData;
-
-            try {
-                marineData = await fetchWithRetry(marineUrl);
-            } catch(e) {
-                console.error(`Marine API failed for ${waypoint.name}: ${e.message}`);
-            }
-
-            try {
-                weatherData = await fetchWithRetry(weatherUrl);
-            } catch(e) {
-                console.error(`Weather API failed for ${waypoint.name}: ${e.message}`);
-            }
-
-            if (!weatherData && !marineData) {
-                throw new Error("Both primary APIs failed to provide necessary data.");
-            }
-
-            const combined = [];
-            const weatherTimes = weatherData?.hourly?.time || [];
-            const marineTimes = marineData?.hourly?.time || [];
-            const allTimes = Array.from(new Set([...weatherTimes, ...marineTimes])).sort();
-
-            for (const time of allTimes) {
-                const weatherIndex = weatherTimes.indexOf(time);
-                const marineIndex = marineTimes.indexOf(time);
-
-                let wind = (weatherIndex !== -1) ? weatherData.hourly.wind_speed_10m[weatherIndex] : null;
-                let wave = (marineIndex !== -1) ? marineData.hourly.wave_height[marineIndex] : null;
-
-                if (wind === null && wave === null) {
-                    continue;
-                }
-
-                combined.push({
-                    time: new Date(time).getTime(),
-                    wind: wind,
-                    wave: wave,
-                    currents: 'N/A' // No currents API for now
-                });
-            }
-
-            if (combined.length === 0) {
-                throw new Error("No valid data points could be generated.");
-            }
-
-            console.log(`Successfully fetched ${combined.length} data points for ${waypoint.name}`);
-            return combined;
-        }
-
+        // Data fetching functions
         async function fetchAllWaypointWeather() {
             const results = {};
-            const waypointPromises = CONFIG.WAYPOINTS.map(waypoint => {
-                return fetchWaypointData(waypoint)
-                    .then(data => {
+            
+            for (const waypoint of CONFIG.WAYPOINTS) {
+                try {
+                    const data = await fetchWaypointData(waypoint);
+                    if (validateWeatherData(data)) {
                         results[waypoint.name] = data;
-                    })
-                    .catch(e => {
-                        console.error(`Failed to fetch ${waypoint.name}: ${e.message}`);
-                        results[waypoint.name] = null; // Store null to indicate failure
-                    });
-            });
-
-            await Promise.all(waypointPromises);
+                    }
+                } catch (error) {
+                    console.error(`Failed to fetch ${waypoint.name}:`, error);
+                }
+            }
+            
             return results;
         }
 
-        function analyzeSegment(segment, weatherData, startIndex) {
-            const fromWp = CONFIG.WAYPOINTS[segment.from];
-            const toWp = CONFIG.WAYPOINTS[segment.to];
-
-            let wpData = weatherData[fromWp.name];
-            if (segment.distance_nm === 0) {
-                wpData = weatherData[toWp.name];
-            }
-
-            const baseAnalysis = {
-                name: segment.name,
-                from: fromWp.name.replace(/_/g, ' '),
-                to: toWp.name.replace(/_/g, ' '),
-                duration: segment.distance_nm === 0 ? 24 : Math.round(segment.distance_nm / CONFIG.VESSEL.cruising_speed_kts),
-                startTime: "N/A",
-                maxWind: null,
-                maxWave: null,
-                safety: "UNKNOWN",
-                conditions: "No data"
-            };
-
-            if (!wpData || wpData.length === 0) {
-                console.warn(`No weather data available for segment: ${segment.name}`);
-                return baseAnalysis;
-            }
-
-            let analysisHours = segment.distance_nm === 0 ? 24 : Math.ceil(segment.distance_nm / CONFIG.VESSEL.cruising_speed_kts);
-            let dataPoints = Math.ceil(analysisHours / CONFIG.INTERVAL_HOURS);
-            let maxWind = -Infinity;
-            let maxWave = -Infinity;
-            let hasWind = false;
-            let hasWave = false;
-
-            if (startIndex < wpData.length) {
-                baseAnalysis.startTime = formatDateTime(wpData[startIndex].time);
-                const endIndex = Math.min(startIndex + dataPoints, wpData.length);
-                for (let i = startIndex; i < endIndex; i++) {
-                    if (wpData[i]) {
-                        if (wpData[i].wind !== null) {
-                            maxWind = Math.max(maxWind, wpData[i].wind);
-                            hasWind = true;
-                        }
-                        if (wpData[i].wave !== null) {
-                            maxWave = Math.max(maxWave, wpData[i].wave);
-                            hasWave = true;
-                        }
-                    }
+        async function fetchWaypointData(waypoint) {
+            try {
+                // Fetch marine data
+                const marineUrl = `${CONFIG.API_SOURCES.MARINE}?latitude=${waypoint.lat}&longitude=${waypoint.lon}&hourly=wave_height&forecast_days=${CONFIG.FORECAST_DAYS}&timezone=${CONFIG.TZ}`;
+                const marineResponse = await fetch(marineUrl);
+                
+                if (!marineResponse.ok) {
+                    throw new Error(`Marine API error: ${marineResponse.status}`);
                 }
-            } else {
-                console.warn(`Start index ${startIndex} is out of bounds for waypoint data. Skipping analysis for segment: ${segment.name}`);
-                return baseAnalysis;
-            }
-
-            // Set max values to null if no data was found
-            if (!hasWind) maxWind = null;
-            if (!hasWave) maxWave = null;
-
-            // Use the new, more detailed analysis logic
-            let safetyStatus = "UNKNOWN";
-            let conditionsText = "Data Unavailable";
-
-            if (hasWind && hasWave) {
-                if (maxWind > CONFIG.THRESHOLDS.DANGEROUS.wind || maxWave > CONFIG.THRESHOLDS.DANGEROUS.wave) {
-                    safetyStatus = "DANGEROUS";
-                } else if (maxWind > CONFIG.THRESHOLDS.MARGINAL.wind || maxWave > CONFIG.THRESHOLDS.MARGINAL.wave) {
-                    safetyStatus = "MARGINAL";
-                } else if (maxWind > CONFIG.THRESHOLDS.ACCEPTABLE.wind || maxWave > CONFIG.THRESHOLDS.ACCEPTABLE.wave) {
-                    safetyStatus = "ACCEPTABLE";
-                } else {
-                    safetyStatus = "FAVORABLE";
+                
+                // Fetch weather data
+                const weatherUrl = `${CONFIG.API_SOURCES.WEATHER}?latitude=${waypoint.lat}&longitude=${waypoint.lon}&hourly=wind_speed_10m&forecast_days=${CONFIG.FORECAST_DAYS}&timezone=${CONFIG.TZ}&wind_speed_unit=kn`;
+                const weatherResponse = await fetch(weatherUrl);
+                
+                if (!weatherResponse.ok) {
+                    throw new Error(`Weather API error: ${weatherResponse.status}`);
                 }
-                conditionsText = `${maxWind.toFixed(1)}kt, ${maxWave.toFixed(1)}m`;
-            } else {
-                conditionsText = "Partial/No data";
+                
+                const marineData = await marineResponse.json();
+                const weatherData = await weatherResponse.json();
+                
+                // Validate API responses
+                if (!marineData?.hourly?.wave_height || !weatherData?.hourly?.wind_speed_10m) {
+                    throw new Error("Invalid API response structure");
+                }
+                
+                // Combine data at 3-hour intervals
+                const combined = [];
+                const maxPoints = Math.min(
+                    marineData.hourly.time.length,
+                    weatherData.hourly.time.length
+                );
+                
+                for (let i = 0; i < maxPoints; i += CONFIG.INTERVAL_HOURS) {
+                    combined.push({
+                        time: weatherData.hourly.time[i],
+                        wind: weatherData.hourly.wind_speed_10m[i] || 0,
+                        wave: marineData.hourly.wave_height[i] || 0
+                    });
+                }
+                
+                if (combined.length === 0) {
+                    throw new Error("No valid data points generated");
+                }
+                
+                return combined;
+                
+            } catch (error) {
+                console.error(`API fetch failed for ${waypoint.name}:`, error);
+                throw error;
             }
-
-            return {
-                ...baseAnalysis,
-                maxWind: hasWind ? maxWind.toFixed(1) : 'N/A',
-                maxWave: hasWave ? maxWave.toFixed(1) : 'N/A',
-                safety: safetyStatus,
-                conditions: conditionsText
-            };
         }
 
+        // Trip analysis functions
         function analyzeTrip(weatherData, startDayOffset = 0) {
-            console.log(`Starting trip analysis for day offset: ${startDayOffset}`);
             const analysis = {
                 segments: [],
                 totalHours: 0,
@@ -584,33 +573,29 @@
                 recommendation: "Calculating...",
                 startDay: startDayOffset + 1
             };
-
-            const startHourIndex = startDayOffset * (24 / CONFIG.INTERVAL_HOURS);
+            
+            // Convert start day to hour index (8 data points per day at 3-hour intervals)
+            const startHourIndex = startDayOffset * 8;
             let currentHourIndex = startHourIndex;
             let dangerousCount = 0;
             let marginalCount = 0;
-            let acceptableCount = 0;
-            let favorableCount = 0;
-            let unknownCount = 0;
-
+            
             CONFIG.ROUTE_SEGMENTS.forEach(segment => {
                 const segmentAnalysis = analyzeSegment(segment, weatherData, currentHourIndex);
                 analysis.segments.push(segmentAnalysis);
                 analysis.totalHours += segmentAnalysis.duration;
                 
-                // Tally safety status
-                switch(segmentAnalysis.safety) {
-                    case "DANGEROUS": dangerousCount++; analysis.warnings.push(`DANGEROUS: ${segment.name}`); break;
-                    case "MARGINAL": marginalCount++; break;
-                    case "ACCEPTABLE": acceptableCount++; break;
-                    case "FAVORABLE": favorableCount++; break;
-                    default: unknownCount++; break;
+                if (segmentAnalysis.safety === "DANGEROUS") {
+                    dangerousCount++;
+                    analysis.warnings.push(`DANGEROUS: ${segment.name}`);
+                } else if (segmentAnalysis.safety === "MARGINAL") {
+                    marginalCount++;
                 }
-
+                
                 currentHourIndex += Math.ceil(segmentAnalysis.duration / CONFIG.INTERVAL_HOURS);
             });
-
-            // Determine overall recommendation
+            
+            // Determine overall status
             if (dangerousCount > 0) {
                 analysis.status = "DANGEROUS CONDITIONS";
                 analysis.recommendation = "🔴 DO NOT PROCEED - Dangerous conditions expected";
@@ -620,246 +605,314 @@
             } else if (marginalCount > 0) {
                 analysis.status = "SOME MARGINAL CONDITIONS";
                 analysis.recommendation = "🟡 PROCEED WITH CAUTION";
-            } else if (acceptableCount > 0 || favorableCount > 0) {
+            } else {
                 analysis.status = "FAVORABLE CONDITIONS";
                 analysis.recommendation = "🟢 GOOD TO GO - Favorable conditions";
-            } else {
-                analysis.status = "DATA INSUFFICIENT";
-                analysis.recommendation = "⚫️ Could not analyze due to missing data.";
             }
-
-            console.log("Trip analysis complete.");
+            
             return analysis;
         }
 
-        // --- UI Rendering Functions ---
-        function renderUI() {
-            elements.startDateSelect.innerHTML = '';
-            const today = new Date();
-            for (let i = 0; i < 9; i++) {
-                const date = new Date(today);
-                date.setDate(today.getDate() + i);
-                const option = document.createElement('option');
-                option.value = i;
-                option.textContent = `Day ${i + 1} (${formatDate(date.getTime())})`;
-                elements.startDateSelect.appendChild(option);
+        function analyzeSegment(segment, weatherData, startIndex) {
+            const fromWp = CONFIG.WAYPOINTS[segment.from];
+            const toWp = CONFIG.WAYPOINTS[segment.to];
+            
+            // Get weather data for the appropriate waypoint
+            let wpData = weatherData[fromWp.name];
+            if (segment.distance_nm === 0) {
+                wpData = weatherData[toWp.name]; // Use destination for fishing
             }
-            elements.startDateSelect.value = state.startDateOffset;
-
-            renderDashboard();
-            renderTripAnalysis();
+            
+            // Base analysis object
+            const baseAnalysis = {
+                name: segment.name,
+                from: fromWp.name,
+                to: toWp.name,
+                duration: segment.distance_nm === 0 ? 24 : Math.round(segment.distance_nm / CONFIG.VESSEL.cruising_speed_kts),
+                startTime: "N/A",
+                maxWind: "N/A",
+                maxWave: "N/A",
+                safety: "UNKNOWN",
+                conditions: "No data"
+            };
+            
+            if (!validateWeatherData(wpData)) {
+                return baseAnalysis;
+            }
+            
+            // Calculate analysis window
+            let analysisHours = segment.distance_nm === 0 ? 24 : Math.ceil(segment.distance_nm / CONFIG.VESSEL.cruising_speed_kts);
+            let dataPoints = Math.ceil(analysisHours / CONFIG.INTERVAL_HOURS);
+            
+            let maxWind = 0;
+            let maxWave = 0;
+            
+            if (startIndex < wpData.length) {
+                baseAnalysis.startTime = formatTime(wpData[startIndex].time);
+                
+                const endIndex = Math.min(startIndex + dataPoints, wpData.length);
+                for (let i = startIndex; i < endIndex; i++) {
+                    maxWind = Math.max(maxWind, wpData[i].wind);
+                    maxWave = Math.max(maxWave, wpData[i].wave);
+                }
+            }
+            
+            // Determine safety and conditions
+            let safety = "SAFE";
+            let conditions = "Good";
+            
+            if (maxWind > SAFETY_THRESHOLDS.DANGEROUS.wind || maxWave > SAFETY_THRESHOLDS.DANGEROUS.wave) {
+                safety = "DANGEROUS";
+                conditions = `Dangerous: ${maxWind.toFixed(0)}kt, ${maxWave.toFixed(1)}m`;
+            } else if (maxWind > SAFETY_THRESHOLDS.MARGINAL.wind || maxWave > SAFETY_THRESHOLDS.MARGINAL.wave) {
+                safety = "MARGINAL";
+                conditions = `Rough: ${maxWind.toFixed(0)}kt, ${maxWave.toFixed(1)}m`;
+            } else if (maxWind > SAFETY_THRESHOLDS.ACCEPTABLE.wind || maxWave > SAFETY_THRESHOLDS.ACCEPTABLE.wave) {
+                safety = "ACCEPTABLE";
+                conditions = `Moderate: ${maxWind.toFixed(0)}kt, ${maxWave.toFixed(1)}m`;
+            } else {
+                conditions = `Good: ${maxWind.toFixed(0)}kt, ${maxWave.toFixed(1)}m`;
+            }
+            
+            return {
+                ...baseAnalysis,
+                maxWind: maxWind.toFixed(1),
+                maxWave: maxWave.toFixed(1),
+                safety: safety,
+                conditions: conditions
+            };
         }
 
-        function getDailySummary(waypointData) {
-            const dailySummaries = {};
-            if (!waypointData || waypointData.length === 0) return dailySummaries;
-
-            waypointData.forEach(point => {
-                const date = formatDate(point.time);
-                if (!dailySummaries[date]) {
-                    dailySummaries[date] = {
-                        date: date,
-                        minWind: Infinity,
-                        maxWind: -Infinity,
-                        minWave: Infinity,
-                        maxWave: -Infinity,
-                        hasWind: false,
-                        hasWave: false
-                    };
-                }
-                if (point.wind !== null) {
-                    dailySummaries[date].minWind = Math.min(dailySummaries[date].minWind, point.wind);
-                    dailySummaries[date].maxWind = Math.max(dailySummaries[date].maxWind, point.wind);
-                    dailySummaries[date].hasWind = true;
-                }
-                if (point.wave !== null) {
-                    dailySummaries[date].minWave = Math.min(dailySummaries[date].minWave, point.wave);
-                    dailySummaries[date].maxWave = Math.max(dailySummaries[date].maxWave, point.wave);
-                    dailySummaries[date].hasWave = true;
-                }
-            });
-            return Object.values(dailySummaries);
-        }
-
-        function renderDashboard() {
-            const contentDiv = elements.dashboardContent;
-            contentDiv.innerHTML = '';
-            const data = state.allWeatherData;
-
-            if (Object.keys(data).length === 0) {
-                contentDiv.innerHTML = '<div class="message-box info">Please click "Run Analysis" to get the latest weather data.</div>';
+        // Wanganella fishing analysis
+        function analyzeWanganellaFishing(wanganellaData, startOffset = 0) {
+            if (!validateWeatherData(wanganellaData)) {
+                fishingResults.innerHTML = "<p>No valid fishing data available</p>";
                 return;
             }
-
-            let htmlContent = '';
-            let failedWaypoints = [];
-
-            CONFIG.WAYPOINTS.forEach(waypoint => {
-                const wpData = data[waypoint.name];
-                if (!wpData) {
-                    failedWaypoints.push(waypoint.name);
-                    return;
-                }
-
-                const dailySummary = getDailySummary(wpData);
-                let waypointHtml = `<h3 class="text-xl font-bold mb-2 mt-4 text-center sm:text-left">${waypoint.name.replace(/_/g, ' ')}</h3>`;
-                waypointHtml += `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">`;
-
-                dailySummary.forEach(day => {
-                    const conditions = getConditionsDescription(day.maxWind, day.maxWave);
-                    const bgColor = getStatusColorClass(conditions).split(' ')[0];
-                    const textColor = getStatusColorClass(conditions).split(' ')[1];
+            
+            const outboundHours = CONFIG.ROUTE_SEGMENTS.slice(0, 4).reduce((sum, seg) => sum + seg.distance_nm, 0) / CONFIG.VESSEL.cruising_speed_kts;
+            const fishingStartIndex = (startOffset * 8) + Math.ceil(outboundHours / CONFIG.INTERVAL_HOURS);
+            
+            let html = `
+                <h3>Fishing Forecast (Start: Day ${startOffset + 1})</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Trip Day</th>
+                            <th>Date</th>
+                            <th>Max Wind (kts)</th>
+                            <th>Max Wave (m)</th>
+                            <th>Good Hours</th>
+                            <th>Quality</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            for (let day = 0; day < 3; day++) {
+                const dayStartIndex = fishingStartIndex + (day * 8);
+                const dayEndIndex = Math.min(dayStartIndex + 8, wanganellaData.length);
+                
+                let maxWind = 0, maxWave = 0, goodHours = 0;
+                let fishingDate = "N/A";
+                
+                if (dayStartIndex >= 0 && dayStartIndex < wanganellaData.length) {
+                    fishingDate = formatDate(wanganellaData[dayStartIndex].time);
                     
-                    const cardHtml = `
-                        <div class="${bgColor} border border-gray-200 rounded-xl p-4 shadow-sm transition-transform transform hover:scale-105">
-                            <p class="font-semibold text-lg">${day.date}</p>
-                            <p class="text-gray-700"><strong>Wind:</strong> ${day.hasWind ? `${day.minWind.toFixed(1)} - ${day.maxWind.toFixed(1)} kts` : 'N/A'}</p>
-                            <p class="text-gray-700"><strong>Wave:</strong> ${day.hasWave ? `${day.minWave.toFixed(1)} - ${day.maxWave.toFixed(1)} m` : 'N/A'}</p>
-                            <p class="font-bold text-gray-900">Conditions: <span class="${textColor} text-xl">${conditions}</span></p>
+                    for (let i = dayStartIndex; i < dayEndIndex; i++) {
+                        if (i < wanganellaData.length) {
+                            const data = wanganellaData[i];
+                            maxWind = Math.max(maxWind, data.wind);
+                            maxWave = Math.max(maxWave, data.wave);
+                            
+                            if (data.wind < 15 && data.wave < 1.5) {
+                                goodHours += 3;
+                            }
+                        }
+                    }
+                }
+                
+                const quality = goodHours >= 12 ? "Excellent" : 
+                               goodHours >= 8 ? "Good" : 
+                               goodHours >= 4 ? "Fair" : "Poor";
+                
+                const qualityClass = quality === "Excellent" ? "safe" : 
+                                    quality === "Good" ? "marginal" : 
+                                    quality === "Fair" ? "marginal" : "dangerous";
+                
+                html += `
+                    <tr>
+                        <td>Day ${day + 3}</td>
+                        <td>${fishingDate}</td>
+                        <td>${maxWind.toFixed(1)}</td>
+                        <td>${maxWave.toFixed(1)}</td>
+                        <td>${goodHours}</td>
+                        <td class="${qualityClass}">${quality}</td>
+                    </tr>
+                `;
+            }
+            
+            html += `</tbody></table>`;
+            
+            fishingResults.innerHTML = html;
+            document.querySelector('#fishing-forecast .loading').classList.add('hidden');
+            fishingResults.classList.remove('hidden');
+        }
+
+        // UI update functions
+        function updateDashboard(weatherData) {
+            let html = '';
+            
+            CONFIG.WAYPOINTS.forEach(waypoint => {
+                const wpData = weatherData[waypoint.name];
+                if (validateWeatherData(wpData)) {
+                    const currentData = wpData[0];
+                    const conditions = getConditionsDescription(currentData.wind, currentData.wave);
+                    const conditionClass = getConditionClass(currentData.wind, currentData.wave);
+                    const icon = getWeatherIcon(currentData.wind, currentData.wave);
+                    
+                    html += `
+                        <div class="waypoint-card card">
+                            <h3>${waypoint.name.replace(/_/g, ' ')}</h3>
+                            <div class="weather-icon">${icon}</div>
+                            <div class="data-value">${currentData.wind.toFixed(1)} kts</div>
+                            <div class="data-label">Wind Speed</div>
+                            <div class="data-value">${currentData.wave.toFixed(1)} m</div>
+                            <div class="data-label">Wave Height</div>
+                            <div class="conditions ${conditionClass}">${conditions}</div>
                         </div>
                     `;
-                    waypointHtml += cardHtml;
-                });
-                waypointHtml += `</div>`;
-                htmlContent += waypointHtml;
+                } else {
+                    html += `
+                        <div class="waypoint-card card">
+                            <h3>${waypoint.name.replace(/_/g, ' ')}</h3>
+                            <div class="data-value">N/A</div>
+                            <div class="data-label">No data available</div>
+                        </div>
+                    `;
+                }
             });
-
-            if (failedWaypoints.length > 0) {
-                htmlContent = `<div class="message-box error mb-4">
-                    ⚠️ Data unavailable for: ${failedWaypoints.map(w => w.replace(/_/g, ' ')).join(', ')}
-                    </div>` + htmlContent;
-            }
-
-            contentDiv.innerHTML = htmlContent;
+            
+            weatherDashboard.innerHTML = html;
         }
 
-        function renderTripAnalysis() {
-            const contentDiv = elements.tripAnalysisContent;
-            contentDiv.innerHTML = '';
-
-            if (!state.tripAnalysis) {
-                contentDiv.innerHTML = '<div class="message-box warning">Please run an analysis to see the report.</div>';
-                return;
-            }
-
-            const analysis = state.tripAnalysis;
-            const tripStartDate = new Date();
-            tripStartDate.setDate(tripStartDate.getDate() + state.startDateOffset);
-
-            let recommendationClass = 'bg-gray-100 text-gray-700';
-            if (analysis.status === "DANGEROUS CONDITIONS") {
-                recommendationClass = 'bg-red-500 text-white';
-            } else if (analysis.status === "MULTIPLE MARGINAL CONDITIONS" || analysis.status === "SOME MARGINAL CONDITIONS") {
-                recommendationClass = 'bg-yellow-500 text-white';
-            } else if (analysis.status === "FAVORABLE CONDITIONS") {
-                recommendationClass = 'bg-emerald-500 text-white';
-            }
-
-            const analysisHtml = `
-                <div class="space-y-4">
-                    <div class="p-4 rounded-xl font-bold text-center text-lg ${recommendationClass}">
-                        ${analysis.recommendation}
-                    </div>
-                    <div class="p-4 bg-gray-100 rounded-xl text-sm text-gray-700 shadow-inner">
-                        <p><strong>Status:</strong> ${analysis.status}</p>
-                        <p><strong>Total Trip Duration:</strong> ${analysis.totalHours} hours</p>
-                        <p><strong>Start Date:</strong> ${formatDate(tripStartDate.getTime())}</p>
-                    </div>
-                    ${analysis.warnings.length > 0 ? `
-                    <div class="p-4 bg-red-100 text-red-700 rounded-xl border border-red-200">
-                        <h3 class="font-bold">Warnings:</h3>
-                        <ul class="list-disc list-inside mt-2">
-                            ${analysis.warnings.map(w => `<li>${w}</li>`).join('')}
-                        </ul>
-                    </div>` : ''}
-                    <h3 class="text-lg font-bold mt-6 mb-2">Segment Breakdown</h3>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white rounded-xl shadow overflow-hidden">
-                            <thead class="bg-gray-200 text-sm">
-                                <tr>
-                                    <th class="py-2 px-4 text-left">Leg</th>
-                                    <th class="py-2 px-4 text-left">Start Time</th>
-                                    <th class="py-2 px-4 text-left">Max Wind/Wave</th>
-                                    <th class="py-2 px-4 text-left">Safety</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${analysis.segments.map(s => {
-                                    const safetyStatus = s.safety;
-                                    let safetyColorClass = '';
-                                    if (safetyStatus === "DANGEROUS") safetyColorClass = 'bg-red-500 text-white';
-                                    else if (safetyStatus === "MARGINAL") safetyColorClass = 'bg-orange-500 text-white';
-                                    else if (safetyStatus === "ACCEPTABLE") safetyColorClass = 'bg-lime-500 text-gray-900';
-                                    else if (safetyStatus === "FAVORABLE") safetyColorClass = 'bg-emerald-500 text-white';
-                                    else safetyColorClass = 'bg-gray-500 text-white';
-                                    return `
-                                    <tr class="border-t border-gray-100 text-sm">
-                                        <td class="py-2 px-4 whitespace-nowrap">${s.name}</td>
-                                        <td class="py-2 px-4">${s.startTime}</td>
-                                        <td class="py-2 px-4">${s.maxWind}kt / ${s.maxWave}m</td>
-                                        <td class="py-2 px-4"><span class="inline-block text-center py-1 px-2 rounded-full text-xs font-semibold ${safetyColorClass}">${s.safety}</span></td>
-                                    </tr>
-                                    `;
-                                }).join('')}
-                            </tbody>
-                        </table>
-                    </div>
+        function updateTripAnalysis(analysis, startOffset) {
+            let html = `
+                <div class="recommendation ${analysis.recommendation.includes('🟢') ? 'recommendation-safe' : 
+                                           analysis.recommendation.includes('🟡') ? 'recommendation-warning' : 
+                                           'recommendation-danger'}">
+                    ${analysis.recommendation}
                 </div>
+                <p><strong>Status:</strong> ${analysis.status}</p>
+                <p><strong>Duration:</strong> ${analysis.totalHours} hours</p>
             `;
-            contentDiv.innerHTML = analysisHtml;
+            
+            if (analysis.warnings.length > 0) {
+                html += `<div class="warnings"><strong>Warnings:</strong><ul>`;
+                analysis.warnings.forEach(warning => {
+                    html += `<li>${warning}</li>`;
+                });
+                html += `</ul></div>`;
+            }
+            
+            html += `
+                <h3>Trip Segments</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Leg</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Duration (h)</th>
+                            <th>Start Time</th>
+                            <th>Max Wind</th>
+                            <th>Max Wave</th>
+                            <th>Conditions</th>
+                            <th>Safety</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            analysis.segments.forEach(segment => {
+                const safetyClass = segment.safety === "DANGEROUS" ? "dangerous" : 
+                                  segment.safety === "MARGINAL" ? "marginal" : "safe";
+                
+                html += `
+                    <tr>
+                        <td>${segment.name}</td>
+                        <td>${segment.from.replace(/_/g, ' ')}</td>
+                        <td>${segment.to.replace(/_/g, ' ')}</td>
+                        <td>${segment.duration}</td>
+                        <td>${segment.startTime}</td>
+                        <td>${segment.maxWind} kts</td>
+                        <td>${segment.maxWave} m</td>
+                        <td>${segment.conditions}</td>
+                        <td class="${safetyClass}">${segment.safety}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `</tbody></table>`;
+            
+            analysisResults.innerHTML = html;
+            document.querySelector('#trip-analysis .loading').classList.add('hidden');
+            analysisResults.classList.remove('hidden');
         }
 
+        // Helper functions
+        function validateWeatherData(data) {
+            return data && 
+                   Array.isArray(data) && 
+                   data.length > 0 && 
+                   data.every(d => d && typeof d.wind === 'number' && typeof d.wave === 'number');
+        }
 
-        // --- Event Listeners and Main App Flow ---
-        elements.runAnalysisBtn.addEventListener('click', async () => {
-            hideMessage();
-            setButtonState(true);
-            elements.runAnalysisBtn.textContent = 'Fetching Data...';
-            try {
-                showMessage('🚀 Fetching live weather data and running analysis...', 'info');
-                await saveSettings();
-                state.allWeatherData = await fetchAllWaypointWeather();
-                showMessage('✅ Data fetch complete. Running trip analysis...', 'success');
-                state.tripAnalysis = analyzeTrip(state.allWeatherData, state.startDateOffset);
-                showMessage('✨ Analysis complete!', 'success');
-                renderUI();
-            } catch (error) {
-                console.error("Analysis failed:", error);
-                showMessage('⚠️ Analysis failed. Please check the console for details.', 'error');
-            } finally {
-                setButtonState(false);
-                elements.runAnalysisBtn.textContent = 'Run Analysis';
-            }
-        });
+        function getConditionsDescription(wind, wave) {
+            if (wind > 30 || wave > 3.5) return "Dangerous";
+            if (wind > 20 || wave > 2.5) return "Rough";
+            if (wind > 15 || wave > 1.5) return "Moderate";
+            if (wind > 10 || wave > 1.0) return "Slight";
+            return "Calm";
+        }
 
-        elements.clearCacheBtn.addEventListener('click', () => {
-            hideMessage();
-            state.allWeatherData = {};
-            state.tripAnalysis = null;
-            showMessage('Data cleared. You can run a new analysis.', 'info');
-            renderUI();
-        });
+        function getConditionClass(wind, wave) {
+            if (wind > 30 || wave > 3.5) return "dangerous";
+            if (wind > 20 || wave > 2.5) return "marginal";
+            return "safe";
+        }
 
-        elements.startDateSelect.addEventListener('change', (e) => {
-            state.startDateOffset = parseInt(e.target.value);
-        });
+        function getWeatherIcon(wind, wave) {
+            if (wind > 30 || wave > 3.5) return "<i class='fas fa-hurricane'></i>";
+            if (wind > 20 || wave > 2.5) return "<i class='fas fa-wind'></i>";
+            if (wind > 15 || wave > 1.5) return "<i class='fas fa-cloud-sun'></i>";
+            if (wind > 10 || wave > 1.0) return "<i class='fas fa-cloud'></i>";
+            return "<i class='fas fa-sun'></i>";
+        }
 
-        elements.tabButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
-                const tab = e.target.dataset.tab;
-                elements.tabButtons.forEach(btn => btn.classList.remove('active'));
-                elements.tabContents.forEach(content => content.classList.remove('active'));
-
-                e.target.classList.add('active');
-                document.getElementById(tab).classList.add('active');
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleString("en-NZ", {
+                timeZone: CONFIG.TZ,
+                day: "2-digit",
+                month: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit"
             });
-        });
+        }
 
-        window.onload = () => {
-          generateTripWaypoints();
-          initializeFirebase();
-        };
+        function formatDate(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleDateString("en-NZ", {
+                timeZone: CONFIG.TZ
+            });
+        }
+
+        function showLoading(element) {
+            if (element) {
+                element.classList.remove('hidden');
+            }
+        }
     </script>
-
 </body>
 </html>
