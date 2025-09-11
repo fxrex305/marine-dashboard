@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +13,6 @@
             color: #1f2937;
         }
         .container {
-
             max-width: 800px;
             margin: 2rem auto;
             min-height: 95vh;
@@ -35,7 +33,6 @@
         .tab-content.active {
             display: flex;
             flex-direction: column;
-
         }
         .tab-button {
             transition: all 0.3s ease;
@@ -57,7 +54,6 @@
             background-color: #d1e5f8;
             color: #2c5282;
         }
-
         .message-box.success {
             background-color: #d4edda;
             color: #155724;
@@ -79,7 +75,6 @@
             border-radius: 10px;
         }
         ::-webkit-scrollbar-thumb {
-
             background: #888;
             border-radius: 10px;
         }
@@ -95,9 +90,7 @@
         <header class="p-6 bg-white border-b border-gray-200 text-center">
             <h1 class="text-3xl font-bold text-gray-800">⚓ Ian's Marine Weather Forecast</h1>
             <p class="text-lg text-gray-600">(Wanganella Banks)</p>
-            <p id="user-id-display" class="mt-2 
-
-text-xs text-gray-400"></p>
+            <p id="user-id-display" class="mt-2 text-xs text-gray-400"></p>
         </header>
 
         <!-- Loading and Message Area -->
@@ -110,18 +103,15 @@ text-xs text-gray-400"></p>
                     <label for="start-date" class="block text-sm font-medium text-gray-700">Trip Start Date:</label>
                     <select id="start-date" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm rounded-md shadow-sm"></select>
                 </div>
-
                 <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                    <button id="run-analysis" class="w-full sm:w-auto px-6 py-3 bg-emerald-600 text-white rounded-lg shadow-md hover:bg-emerald-700 transition-colors duration-200 text-base font-semibold">Run Analysis</button>
-                    <button id="clear-cache" class="w-full sm:w-auto px-6 py-3 bg-gray-200 text-gray-700 rounded-lg shadow-md hover:bg-gray-300 transition-colors duration-200 text-base font-semibold">Clear Data</button>
+                    <button id="run-analysis" class="w-full sm:w-auto px-6 py-3 bg-emerald-600 text-white rounded-lg shadow-md hover:bg-emerald-700 transition-colors duration-200 text-base font-semibold" disabled>Run Analysis</button>
+                    <button id="clear-cache" class="w-full sm:w-auto px-6 py-3 bg-gray-200 text-gray-700 rounded-lg shadow-md hover:bg-gray-300 transition-colors duration-200 text-base font-semibold" disabled>Clear Data</button>
                 </div>
             </div>
         </div>
 
         <!-- Tabs -->
-        <nav class="flex justify-around bg-gray-50 border-b border-gray-200 text-
-
-gray-500 font-medium">
+        <nav class="flex justify-around bg-gray-50 border-b border-gray-200 text-gray-500 font-medium">
             <button class="tab-button active flex-1 py-4 text-center" data-tab="dashboard">Dashboard</button>
             <button class="tab-button flex-1 py-4 text-center" data-tab="trip-analysis">Trip Analysis</button>
         </nav>
@@ -132,9 +122,7 @@ gray-500 font-medium">
             <div id="dashboard" class="tab-content active">
                 <h2 class="text-2xl font-bold mb-4 text-gray-800">Current Waypoint Conditions</h2>
                 <div id="dashboard-content" class="space-y-4">
-                    <div class="message-box 
-
-info">Please click "Run Analysis" to get the latest weather data.</div>
+                    <div class="message-box info">Please click "Run Analysis" to get the latest weather data.</div>
                 </div>
             </div>
 
@@ -149,7 +137,6 @@ info">Please click "Run Analysis" to get the latest weather data.</div>
     </div>
 
     <!-- Firebase SDKs -->
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -158,9 +145,7 @@ info">Please click "Run Analysis" to get the latest weather data.</div>
         setLogLevel('Debug');
 
         // Global variables for Firebase config and App ID
-        const appId = typeof __app_id !== 
-
-'undefined' ? __app_id : 'default-app-id';
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
@@ -178,7 +163,6 @@ info">Please click "Run Analysis" to get the latest weather data.</div>
             MARGINAL: { wind: 20, wave: 2.5 },
             ACCEPTABLE: { wind: 15, wave: 1.5 }
           },
-
           // Waypoints are now dynamic with a new Midpoint
           WAYPOINTS: [],
           ROUTE_SEGMENTS: [],
@@ -195,7 +179,6 @@ info">Please click "Run Analysis" to get the latest weather data.</div>
             { name: "Opua", lat: -35.3085, lon: 174.1218 },
             { name: "North_Cape", lat: -34.4167, lon: 173.0333 },
             { name: "Wanganella_Bank", lat: -32.55, lon: 167.31 },
-
         ];
 
         // --- DYNAMIC WAYPOINT AND ROUTE GENERATION ---
@@ -209,7 +192,6 @@ info">Please click "Run Analysis" to get the latest weather data.</div>
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
             const distanceKm = R * c;
             return distanceKm * 0.539957; // Convert km to nautical miles (nm)
-
         }
 
         function generateTripWaypoints() {
@@ -231,14 +213,11 @@ info">Please click "Run Analysis" to get the latest weather data.</div>
                 { name: "North Cape to Midpoint (Outbound)", from: 1, to: 2, distance_nm: getDistance(CONFIG.WAYPOINTS[1].lat, CONFIG.WAYPOINTS[1].lon, CONFIG.WAYPOINTS[2].lat, CONFIG.WAYPOINTS[2].lon) },
                 { name: "Midpoint to Wanganella Bank (Outbound)", from: 2, to: 3, distance_nm: getDistance(CONFIG.WAYPOINTS[2].lat, CONFIG.WAYPOINTS[2].lon, CONFIG.WAYPOINTS[3].lat, CONFIG.WAYPOINTS[3].lon) },
                 { name: "Fishing Day 1", from: 3, to: 3, distance_nm: 0 },
-
                 { name: "Fishing Day 2", from: 3, to: 3, distance_nm: 0 },
                 { name: "Fishing Day 3", from: 3, to: 3, distance_nm: 0 },
                 { name: "Wanganella Bank to Midpoint (Return)", from: 3, to: 2, distance_nm: getDistance(CONFIG.WAYPOINTS[3].lat, CONFIG.WAYPOINTS[3].lon, CONFIG.WAYPOINTS[2].lat, CONFIG.WAYPOINTS[2].lon) },
                 { name: "Midpoint to North Cape (Return)", from: 2, to: 1, distance_nm: getDistance(CONFIG.WAYPOINTS[2].lat, CONFIG.WAYPOINTS[2].lon, CONFIG.WAYPOINTS[1].lat, CONFIG.WAYPOINTS[1].lon) },
-                { name: "North Cape to Opua (Return)", from: 1, to: 0, distance_nm: getDistance(CONFIG.WAYPOINTS[1].lat, CONFIG.WAYPOINTS[1].lon, CONFIG.WAYPOINTS[0].lat, 
-
-CONFIG.WAYPOINTS[0].lon) },
+                { name: "North Cape to Opua (Return)", from: 1, to: 0, distance_nm: getDistance(CONFIG.WAYPOINTS[1].lat, CONFIG.WAYPOINTS[1].lon, CONFIG.WAYPOINTS[0].lat, CONFIG.WAYPOINTS[0].lon) },
             ];
         }
 
@@ -256,9 +235,7 @@ CONFIG.WAYPOINTS[0].lon) },
         const elements = {
             statusMessage: document.getElementById('status-message'),
             startDateSelect: document.getElementById('start-date'),
-            runAnalysisBtn: 
-
-document.getElementById('run-analysis'),
+            runAnalysisBtn: document.getElementById('run-analysis'),
             clearCacheBtn: document.getElementById('clear-cache'),
             userIdDisplay: document.getElementById('user-id-display'),
             tabButtons: document.querySelectorAll('.tab-button'),
@@ -270,7 +247,6 @@ document.getElementById('run-analysis'),
         function showMessage(message, type = 'info') {
             console.log(`STATUS: ${message}`);
             const el = elements.statusMessage;
-
             el.innerHTML = `<div class="message-box ${type}">${message}</div>`;
             el.classList.remove('hidden');
         }
@@ -287,7 +263,6 @@ document.getElementById('run-analysis'),
                 state.auth = getAuth(app);
 
                 onAuthStateChanged(state.auth, async (user) => {
-
                     console.log("Auth state changed. User:", user ? user.uid : "anonymous");
                     state.isAuthReady = true;
 
@@ -299,6 +274,11 @@ document.getElementById('run-analysis'),
                         state.userId = crypto.randomUUID();
                         elements.userIdDisplay.textContent = `Signed in anonymously.`;
                     }
+                    
+                    // Enable buttons once auth state is confirmed
+                    elements.runAnalysisBtn.disabled = false;
+                    elements.clearCacheBtn.disabled = false;
+                    showMessage("App ready! You can now run an analysis.", "success");
 
                     renderUI();
                 });
@@ -318,8 +298,7 @@ document.getElementById('run-analysis'),
 
         async function saveSettings() {
             if (!state.isAuthReady || !state.userId || !state.auth.currentUser) {
-
-                console.error("Auth not ready or user not signed in. Cannot save settings.");
+                console.log("Auth not ready or user not signed in. Cannot save settings.");
                 return;
             }
             try {
@@ -334,10 +313,8 @@ document.getElementById('run-analysis'),
         }
 
         async function loadSettings() {
-            if (!state.isAuthReady || !
-
-state.userId) {
-                console.error("Auth not ready. Cannot load settings.");
+            if (!state.isAuthReady || !state.userId) {
+                console.log("Auth not ready. Cannot load settings.");
                 return;
             }
             try {
@@ -350,9 +327,7 @@ state.userId) {
                     elements.startDateSelect.value = state.startDateOffset;
                     console.log("Settings loaded from Firestore:", data);
                 } else {
-                    console.log("No settings found 
-
-in Firestore. Using default values.");
+                    console.log("No settings found in Firestore. Using default values.");
                 }
             } catch (error) {
                 console.error("Failed to load settings:", error);
@@ -364,9 +339,7 @@ in Firestore. Using default values.");
         function getConditionsDescription(wind, wave) {
             if (wind === null || wave === null) return "Data Unavailable";
             if (wind > CONFIG.THRESHOLDS.DANGEROUS.wind || wave > CONFIG.THRESHOLDS.DANGEROUS.wave) return "Dangerous";
-            if (wind > CONFIG.THRESHOLDS.MARGINAL.wind || 
-
-wave > CONFIG.THRESHOLDS.MARGINAL.wave) return "Rough";
+            if (wind > CONFIG.THRESHOLDS.MARGINAL.wind || wave > CONFIG.THRESHOLDS.MARGINAL.wave) return "Rough";
             if (wind > CONFIG.THRESHOLDS.ACCEPTABLE.wind || wave > CONFIG.THRESHOLDS.ACCEPTABLE.wave) return "Moderate";
             return "Favorable";
         }
@@ -379,9 +352,7 @@ wave > CONFIG.THRESHOLDS.MARGINAL.wave) return "Rough";
                 case "Rough":
                     return "bg-orange-500 text-white";
                 case "Moderate":
-                    return "bg-lime-500 text-
-
-gray-900";
+                    return "bg-lime-500 text-gray-900";
                 case "Favorable":
                     return "bg-emerald-500 text-white";
                 default:
@@ -400,7 +371,6 @@ gray-900";
                 day: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit',
-
                 hour12: false,
                 timeZone: CONFIG.TZ
             };
@@ -419,7 +389,6 @@ gray-900";
 
         async function fetchWithRetry(url) {
             let attempts = 0;
-
             const maxAttempts = 3;
             const initialDelay = 1000;
 
@@ -436,9 +405,7 @@ gray-900";
                     if (attempts < maxAttempts) {
                         const delay = initialDelay * Math.pow(2, attempts - 1);
                         console.log(`Retrying in ${delay}ms...`);
-                        await new Promise(resolve 
-
-=> setTimeout(resolve, delay));
+                        await new Promise(resolve => setTimeout(resolve, delay));
                     } else {
                         throw new Error(`Failed to fetch data after ${maxAttempts} attempts: ${error.message}`);
                     }
@@ -449,9 +416,7 @@ gray-900";
         async function fetchWaypointData(waypoint) {
             console.log(`Fetching data for waypoint: ${waypoint.name}`);
             const marineUrl = `${CONFIG.API_URLS.marine}?latitude=${waypoint.lat}&longitude=${waypoint.lon}&hourly=wave_height&forecast_days=${CONFIG.FORECAST_DAYS}&timezone=${CONFIG.TZ}`;
-            const weatherUrl = `${CONFIG.API_URLS.weather}?latitude=$
-
-{waypoint.lat}&longitude=${waypoint.lon}&hourly=wind_speed_10m&forecast_days=${CONFIG.FORECAST_DAYS}&timezone=${CONFIG.TZ}&wind_speed_unit=kn`;
+            const weatherUrl = `${CONFIG.API_URLS.weather}?latitude=${waypoint.lat}&longitude=${waypoint.lon}&hourly=wind_speed_10m&forecast_days=${CONFIG.FORECAST_DAYS}&timezone=${CONFIG.TZ}&wind_speed_unit=kn`;
 
             let marineData, weatherData;
 
@@ -467,7 +432,6 @@ gray-900";
                 console.error(`Weather API failed for ${waypoint.name}: ${e.message}`);
             }
 
-
             if (!weatherData && !marineData) {
                 throw new Error("Both primary APIs failed to provide necessary data.");
             }
@@ -481,9 +445,7 @@ gray-900";
                 const weatherIndex = weatherTimes.indexOf(time);
                 const marineIndex = marineTimes.indexOf(time);
 
-                let wind = (weatherIndex !== -1) ? 
-
-weatherData.hourly.wind_speed_10m[weatherIndex] : null;
+                let wind = (weatherIndex !== -1) ? weatherData.hourly.wind_speed_10m[weatherIndex] : null;
                 let wave = (marineIndex !== -1) ? marineData.hourly.wave_height[marineIndex] : null;
 
                 if (wind === null && wave === null) {
@@ -499,9 +461,7 @@ weatherData.hourly.wind_speed_10m[weatherIndex] : null;
             }
 
             if (combined.length === 0) {
-                throw new Error("No valid data 
-
-points could be generated.");
+                throw new Error("No valid data points could be generated.");
             }
 
             console.log(`Successfully fetched ${combined.length} data points for ${waypoint.name}`);
@@ -516,9 +476,7 @@ points could be generated.");
                         results[waypoint.name] = data;
                     })
                     .catch(e => {
-                        console.error(`Failed to fetch 
-
-${waypoint.name}: ${e.message}`);
+                        console.error(`Failed to fetch ${waypoint.name}: ${e.message}`);
                         results[waypoint.name] = null; // Store null to indicate failure
                     });
             });
@@ -534,7 +492,6 @@ ${waypoint.name}: ${e.message}`);
             let wpData = weatherData[fromWp.name];
             if (segment.distance_nm === 0) {
                 wpData = weatherData[toWp.name];
-
             }
 
             const baseAnalysis = {
@@ -552,7 +509,6 @@ ${waypoint.name}: ${e.message}`);
             if (!wpData || wpData.length === 0) {
                 console.warn(`No weather data available for segment: ${segment.name}`);
                 return baseAnalysis;
-
             }
 
             let analysisHours = segment.distance_nm === 0 ? 24 : Math.ceil(segment.distance_nm / CONFIG.VESSEL.cruising_speed_kts);
@@ -566,7 +522,6 @@ ${waypoint.name}: ${e.message}`);
                 baseAnalysis.startTime = formatDateTime(wpData[startIndex].time);
                 const endIndex = Math.min(startIndex + dataPoints, wpData.length);
                 for (let i = startIndex; i < endIndex; i++) {
-
                     if (wpData[i]) {
                         if (wpData[i].wind !== null) {
                             maxWind = Math.max(maxWind, wpData[i].wind);
@@ -583,9 +538,7 @@ ${waypoint.name}: ${e.message}`);
                 return baseAnalysis;
             }
 
-            // Set max values to null if no data 
-
-was found
+            // Set max values to null if no data was found
             if (!hasWind) maxWind = null;
             if (!hasWave) maxWave = null;
 
@@ -598,7 +551,6 @@ was found
                     safetyStatus = "DANGEROUS";
                 } else if (maxWind > CONFIG.THRESHOLDS.MARGINAL.wind || maxWave > CONFIG.THRESHOLDS.MARGINAL.wave) {
                     safetyStatus = "MARGINAL";
-
                 } else if (maxWind > CONFIG.THRESHOLDS.ACCEPTABLE.wind || maxWave > CONFIG.THRESHOLDS.ACCEPTABLE.wave) {
                     safetyStatus = "ACCEPTABLE";
                 } else {
@@ -614,7 +566,6 @@ was found
                 maxWind: hasWind ? maxWind.toFixed(1) : 'N/A',
                 maxWave: hasWave ? maxWave.toFixed(1) : 'N/A',
                 safety: safetyStatus,
-
                 conditions: conditionsText
             };
         }
@@ -632,7 +583,6 @@ was found
 
             const startHourIndex = startDayOffset * (24 / CONFIG.INTERVAL_HOURS);
             let currentHourIndex = startHourIndex;
-
             let dangerousCount = 0;
             let marginalCount = 0;
             let acceptableCount = 0;
@@ -646,9 +596,7 @@ was found
                 
                 // Tally safety status
                 switch(segmentAnalysis.safety) {
-                    case "DANGEROUS": dangerousCount++; analysis.warnings.push(`DANGEROUS: $
-
-{segment.name}`); break;
+                    case "DANGEROUS": dangerousCount++; analysis.warnings.push(`DANGEROUS: ${segment.name}`); break;
                     case "MARGINAL": marginalCount++; break;
                     case "ACCEPTABLE": acceptableCount++; break;
                     case "FAVORABLE": favorableCount++; break;
@@ -661,9 +609,7 @@ was found
             // Determine overall recommendation
             if (dangerousCount > 0) {
                 analysis.status = "DANGEROUS CONDITIONS";
-                analysis.recommendation = "🔴 
-
-DO NOT PROCEED - Dangerous conditions expected";
+                analysis.recommendation = "🔴 DO NOT PROCEED - Dangerous conditions expected";
             } else if (marginalCount > 2) {
                 analysis.status = "MULTIPLE MARGINAL CONDITIONS";
                 analysis.recommendation = "🟡 PROCEED WITH EXTREME CAUTION";
@@ -675,9 +621,7 @@ DO NOT PROCEED - Dangerous conditions expected";
                 analysis.recommendation = "🟢 GOOD TO GO - Favorable conditions";
             } else {
                 analysis.status = "DATA INSUFFICIENT";
-                analysis.recommendation = "⚫️ 
-
-Could not analyze due to missing data.";
+                analysis.recommendation = "⚫️ Could not analyze due to missing data.";
             }
 
             console.log("Trip analysis complete.");
@@ -694,9 +638,7 @@ Could not analyze due to missing data.";
                 const option = document.createElement('option');
                 option.value = i;
                 option.textContent = `Day ${i + 1} (${formatDate(date.getTime())})`;
-                
-
-elements.startDateSelect.appendChild(option);
+                elements.startDateSelect.appendChild(option);
             }
             elements.startDateSelect.value = state.startDateOffset;
 
@@ -713,7 +655,6 @@ elements.startDateSelect.appendChild(option);
                 if (!dailySummaries[date]) {
                     dailySummaries[date] = {
                         date: date,
-
                         minWind: Infinity,
                         maxWind: -Infinity,
                         minWave: Infinity,
@@ -728,9 +669,7 @@ elements.startDateSelect.appendChild(option);
                     dailySummaries[date].hasWind = true;
                 }
                 if (point.wave !== null) {
-                    dailySummaries[date].minWave 
-
-= Math.min(dailySummaries[date].minWave, point.wave);
+                    dailySummaries[date].minWave = Math.min(dailySummaries[date].minWave, point.wave);
                     dailySummaries[date].maxWave = Math.max(dailySummaries[date].maxWave, point.wave);
                     dailySummaries[date].hasWave = true;
                 }
@@ -744,7 +683,6 @@ elements.startDateSelect.appendChild(option);
             const data = state.allWeatherData;
 
             if (Object.keys(data).length === 0) {
-
                 contentDiv.innerHTML = '<div class="message-box info">Please click "Run Analysis" to get the latest weather data.</div>';
                 return;
             }
@@ -759,9 +697,7 @@ elements.startDateSelect.appendChild(option);
                     return;
                 }
 
-                const dailySummary = 
-
-getDailySummary(wpData);
+                const dailySummary = getDailySummary(wpData);
                 let waypointHtml = `<h3 class="text-xl font-bold mb-2 mt-4 text-center sm:text-left">${waypoint.name.replace(/_/g, ' ')}</h3>`;
                 waypointHtml += `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">`;
 
@@ -771,9 +707,7 @@ getDailySummary(wpData);
                     const textColor = getStatusColorClass(conditions).split(' ')[1];
                     
                     const cardHtml = `
-                        <div class="${bgColor} border border-gray-200 rounded-xl p-4 shadow-sm transition-transform transform 
-
-hover:scale-105">
+                        <div class="${bgColor} border border-gray-200 rounded-xl p-4 shadow-sm transition-transform transform hover:scale-105">
                             <p class="font-semibold text-lg">${day.date}</p>
                             <p class="text-gray-700"><strong>Wind:</strong> ${day.hasWind ? `${day.minWind.toFixed(1)} - ${day.maxWind.toFixed(1)} kts` : 'N/A'}</p>
                             <p class="text-gray-700"><strong>Wave:</strong> ${day.hasWave ? `${day.minWave.toFixed(1)} - ${day.maxWave.toFixed(1)} m` : 'N/A'}</p>
@@ -783,7 +717,6 @@ hover:scale-105">
                     waypointHtml += cardHtml;
                 });
                 waypointHtml += `</div>`;
-
                 htmlContent += waypointHtml;
             });
 
@@ -801,9 +734,7 @@ hover:scale-105">
             contentDiv.innerHTML = '';
 
             if (!state.tripAnalysis) {
-                contentDiv.innerHTML = '<div 
-
-class="message-box warning">Please run an analysis to see the report.</div>';
+                contentDiv.innerHTML = '<div class="message-box warning">Please run an analysis to see the report.</div>';
                 return;
             }
 
@@ -815,9 +746,7 @@ class="message-box warning">Please run an analysis to see the report.</div>';
             if (analysis.status === "DANGEROUS CONDITIONS") {
                 recommendationClass = 'bg-red-500 text-white';
             } else if (analysis.status === "MULTIPLE MARGINAL CONDITIONS" || analysis.status === "SOME MARGINAL CONDITIONS") {
-                recommendationClass = 'bg-
-
-yellow-500 text-white';
+                recommendationClass = 'bg-yellow-500 text-white';
             } else if (analysis.status === "FAVORABLE CONDITIONS") {
                 recommendationClass = 'bg-emerald-500 text-white';
             }
@@ -830,7 +759,6 @@ yellow-500 text-white';
                     <div class="p-4 bg-gray-100 rounded-xl text-sm text-gray-700 shadow-inner">
                         <p><strong>Status:</strong> ${analysis.status}</p>
                         <p><strong>Total Trip Duration:</strong> ${analysis.totalHours} hours</p>
-
                         <p><strong>Start Date:</strong> ${formatDate(tripStartDate.getTime())}</p>
                     </div>
                     ${analysis.warnings.length > 0 ? `
@@ -843,7 +771,6 @@ yellow-500 text-white';
                     <h3 class="text-lg font-bold mt-6 mb-2">Segment Breakdown</h3>
                     <div class="overflow-x-auto">
                         <table class="min-w-full bg-white rounded-xl shadow overflow-hidden">
-
                             <thead class="bg-gray-200 text-sm">
                                 <tr>
                                     <th class="py-2 px-4 text-left">Leg</th>
@@ -856,9 +783,7 @@ yellow-500 text-white';
                                 ${analysis.segments.map(s => {
                                     const safetyStatus = s.safety;
                                     let safetyColorClass = '';
-                                    if (safetyStatus === "DANGEROUS") safetyColorClass = 'bg-
-
-red-500 text-white';
+                                    if (safetyStatus === "DANGEROUS") safetyColorClass = 'bg-red-500 text-white';
                                     else if (safetyStatus === "MARGINAL") safetyColorClass = 'bg-orange-500 text-white';
                                     else if (safetyStatus === "ACCEPTABLE") safetyColorClass = 'bg-lime-500 text-gray-900';
                                     else if (safetyStatus === "FAVORABLE") safetyColorClass = 'bg-emerald-500 text-white';
@@ -868,9 +793,7 @@ red-500 text-white';
                                         <td class="py-2 px-4 whitespace-nowrap">${s.name}</td>
                                         <td class="py-2 px-4">${s.startTime}</td>
                                         <td class="py-2 px-4">${s.maxWind}kt / ${s.maxWave}m</td>
-                                        <td class="py-2 
-
-px-4"><span class="inline-block text-center py-1 px-2 rounded-full text-xs font-semibold ${safetyColorClass}">${s.safety}</span></td>
+                                        <td class="py-2 px-4"><span class="inline-block text-center py-1 px-2 rounded-full text-xs font-semibold ${safetyColorClass}">${s.safety}</span></td>
                                     </tr>
                                     `;
                                 }).join('')}
@@ -885,7 +808,6 @@ px-4"><span class="inline-block text-center py-1 px-2 rounded-full text-xs font-
 
         // --- Event Listeners and Main App Flow ---
         elements.runAnalysisBtn.addEventListener('click', async () => {
-
             hideMessage();
             elements.runAnalysisBtn.disabled = true;
             elements.runAnalysisBtn.textContent = 'Fetching Data...';
@@ -898,7 +820,6 @@ px-4"><span class="inline-block text-center py-1 px-2 rounded-full text-xs font-
                 showMessage('✨ Analysis complete!', 'success');
                 renderUI();
             } catch (error) {
-
                 console.error("Analysis failed:", error);
                 showMessage('⚠️ Analysis failed. Please check the console for details.', 'error');
             } finally {
@@ -912,7 +833,6 @@ px-4"><span class="inline-block text-center py-1 px-2 rounded-full text-xs font-
             state.allWeatherData = {};
             state.tripAnalysis = null;
             showMessage('Data cleared. You can run a new analysis.', 'info');
-
             renderUI();
         });
 
@@ -927,7 +847,6 @@ px-4"><span class="inline-block text-center py-1 px-2 rounded-full text-xs font-
                 elements.tabContents.forEach(content => content.classList.remove('active'));
 
                 e.target.classList.add('active');
-
                 document.getElementById(tab).classList.add('active');
             });
         });
@@ -940,4 +859,3 @@ px-4"><span class="inline-block text-center py-1 px-2 rounded-full text-xs font-
 
 </body>
 </html>
-
