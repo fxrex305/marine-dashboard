@@ -119,7 +119,6 @@
 
         <!-- Main Content Area (Tab Content) -->
         <main class="flex-1 p-4 overflow-y-auto">
-
             <!-- Dashboard Tab -->
             <div id="dashboard" class="tab-content active">
                 <h2 class="text-2xl font-bold mb-4 text-gray-800">Current Waypoint Conditions</h2>
@@ -205,35 +204,29 @@
         }
 
         function generateTripWaypoints() {
-            // Calculate midpoint coordinates for the outbound and return legs
-            const opua = STATIC_WAYPOINTS[0];
+            // Calculate midpoint coordinates between North Cape and Wanganella Bank
             const northCape = STATIC_WAYPOINTS[1];
             const wanganellaBank = STATIC_WAYPOINTS[2];
-            const midpoint1Lat = (opua.lat + northCape.lat) / 2;
-            const midpoint1Lon = (opua.lon + northCape.lon) / 2;
-            const midpoint2Lat = (northCape.lat + wanganellaBank.lat) / 2;
-            const midpoint2Lon = (northCape.lon + wanganellaBank.lon) / 2;
+            const midpointLat = (northCape.lat + wanganellaBank.lat) / 2;
+            const midpointLon = (northCape.lon + wanganellaBank.lon) / 2;
 
             CONFIG.WAYPOINTS = [
-                opua,
-                { name: "Midpoint_1", lat: midpoint1Lat, lon: midpoint1Lon },
+                STATIC_WAYPOINTS[0],
                 northCape,
-                { name: "Midpoint_2", lat: midpoint2Lat, lon: midpoint2Lon },
+                { name: "Midpoint", lat: midpointLat, lon: midpointLon },
                 wanganellaBank
             ];
 
             CONFIG.ROUTE_SEGMENTS = [
-                { name: "Opua to Midpoint 1 (Outbound)", from: 0, to: 1, distance_nm: getDistance(CONFIG.WAYPOINTS[0].lat, CONFIG.WAYPOINTS[0].lon, CONFIG.WAYPOINTS[1].lat, CONFIG.WAYPOINTS[1].lon) },
-                { name: "Midpoint 1 to North Cape (Outbound)", from: 1, to: 2, distance_nm: getDistance(CONFIG.WAYPOINTS[1].lat, CONFIG.WAYPOINTS[1].lon, CONFIG.WAYPOINTS[2].lat, CONFIG.WAYPOINTS[2].lon) },
-                { name: "North Cape to Midpoint 2 (Outbound)", from: 2, to: 3, distance_nm: getDistance(CONFIG.WAYPOINTS[2].lat, CONFIG.WAYPOINTS[2].lon, CONFIG.WAYPOINTS[3].lat, CONFIG.WAYPOINTS[3].lon) },
-                { name: "Midpoint 2 to Wanganella Bank (Outbound)", from: 3, to: 4, distance_nm: getDistance(CONFIG.WAYPOINTS[3].lat, CONFIG.WAYPOINTS[3].lon, CONFIG.WAYPOINTS[4].lat, CONFIG.WAYPOINTS[4].lon) },
-                { name: "Fishing Day 1", from: 4, to: 4, distance_nm: 0 },
-                { name: "Fishing Day 2", from: 4, to: 4, distance_nm: 0 },
-                { name: "Fishing Day 3", from: 4, to: 4, distance_nm: 0 },
-                { name: "Wanganella Bank to Midpoint 2 (Return)", from: 4, to: 3, distance_nm: getDistance(CONFIG.WAYPOINTS[4].lat, CONFIG.WAYPOINTS[4].lon, CONFIG.WAYPOINTS[3].lat, CONFIG.WAYPOINTS[3].lon) },
-                { name: "Midpoint 2 to North Cape (Return)", from: 3, to: 2, distance_nm: getDistance(CONFIG.WAYPOINTS[3].lat, CONFIG.WAYPOINTS[3].lon, CONFIG.WAYPOINTS[2].lat, CONFIG.WAYPOINTS[2].lon) },
-                { name: "North Cape to Midpoint 1 (Return)", from: 2, to: 1, distance_nm: getDistance(CONFIG.WAYPOINTS[2].lat, CONFIG.WAYPOINTS[2].lon, CONFIG.WAYPOINTS[1].lat, CONFIG.WAYPOINTS[1].lon) },
-                { name: "Midpoint 1 to Opua (Return)", from: 1, to: 0, distance_nm: getDistance(CONFIG.WAYPOINTS[1].lat, CONFIG.WAYPOINTS[1].lon, CONFIG.WAYPOINTS[0].lat, CONFIG.WAYPOINTS[0].lon) },
+                { name: "Opua to North Cape (Outbound)", from: 0, to: 1, distance_nm: getDistance(CONFIG.WAYPOINTS[0].lat, CONFIG.WAYPOINTS[0].lon, CONFIG.WAYPOINTS[1].lat, CONFIG.WAYPOINTS[1].lon) },
+                { name: "North Cape to Midpoint (Outbound)", from: 1, to: 2, distance_nm: getDistance(CONFIG.WAYPOINTS[1].lat, CONFIG.WAYPOINTS[1].lon, CONFIG.WAYPOINTS[2].lat, CONFIG.WAYPOINTS[2].lon) },
+                { name: "Midpoint to Wanganella Bank (Outbound)", from: 2, to: 3, distance_nm: getDistance(CONFIG.WAYPOINTS[2].lat, CONFIG.WAYPOINTS[2].lon, CONFIG.WAYPOINTS[3].lat, CONFIG.WAYPOINTS[3].lon) },
+                { name: "Fishing Day 1", from: 3, to: 3, distance_nm: 0 },
+                { name: "Fishing Day 2", from: 3, to: 3, distance_nm: 0 },
+                { name: "Fishing Day 3", from: 3, to: 3, distance_nm: 0 },
+                { name: "Wanganella Bank to Midpoint (Return)", from: 3, to: 2, distance_nm: getDistance(CONFIG.WAYPOINTS[3].lat, CONFIG.WAYPOINTS[3].lon, CONFIG.WAYPOINTS[2].lat, CONFIG.WAYPOINTS[2].lon) },
+                { name: "Midpoint to North Cape (Return)", from: 2, to: 1, distance_nm: getDistance(CONFIG.WAYPOINTS[2].lat, CONFIG.WAYPOINTS[2].lon, CONFIG.WAYPOINTS[1].lat, CONFIG.WAYPOINTS[1].lon) },
+                { name: "North Cape to Opua (Return)", from: 1, to: 0, distance_nm: getDistance(CONFIG.WAYPOINTS[1].lat, CONFIG.WAYPOINTS[1].lon, CONFIG.WAYPOINTS[0].lat, CONFIG.WAYPOINTS[0].lon) },
             ];
         }
 
@@ -817,7 +810,7 @@
                 const bankData = banksData.Wanganella_Bank;
                 if (!bankData) return;
 
-                const fishingStartIndex = (state.startDateOffset * (24/CONFIG.INTERVAL_HOURS)) + Math.ceil(totalOutboundHours / CONFIG.INTERVAL_HOURS) + (index * (24/CONFIG.INTERVAL_HOURS));
+                const fishingStartIndex = (state.startDateOffset * (24/CONFIG.INTERVAL_HOURS)) + Math.ceil(totalOutboundHours / CONFIG.VESSEL.cruising_speed_kts) + (index * (24/CONFIG.INTERVAL_HOURS));
 
                 const fishingDayNumber = index + 1;
                 let maxWind = 0, maxWave = 0, goodHours = 0;
@@ -957,4 +950,3 @@
 
 </body>
 </html>
-
